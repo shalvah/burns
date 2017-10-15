@@ -8,9 +8,9 @@
 [![npm version](https://badge.fury.io/js/burns.svg)](https://badge.fury.io/js/burns)
 [![Build Status](https://travis-ci.org/shalvah/burns.svg?branch=master)](https://travis-ci.org/shalvah/burns)
 
-Burns is a zero-dependency Node.js module that lets you manage application events in a clean and consistent manner
+Burns is a zero-dependency Node.js module that lets you manage application events in a clean and consistent manner. Define your events in one place, define listeners to handle them, and fire them when you need to.
 
-## Getting Started
+## Usage
 ```
 npm install --save burns
 ```
@@ -19,26 +19,13 @@ npm install --save burns
 let burns = require('burns');
 ```
 
-### Dispatching events
-To dispatch an event, simply call `Burns#event` with the name of the event:
-
-```js
-burns.event('postLiked');
-```
-
-You may also pass in a payload containing data to be transmitted with the event:
-
-```js
-burns.event('userSignUp', { username: 'ayCarumba' });
-```
-
-## Registering Events
-To register your events with Burns, call `Burns#register` with an object with event names as keys and one or more event listeners as values:
+### Registering Events
+To register your events with Burns, call ` register` with an object with event names as keys and one or more event listeners as values:
 
 ```js
 burns.register({
-    'userFollowed': NotifyUser,
-    'userSignUp': [
+    userFollowed: NotifyUser,
+    userSignUp: [
       SendEmail,
       CongratulateReferrer
     ]
@@ -46,7 +33,7 @@ burns.register({
 ```
 
 ### Defining Listeners and Handlers
-Listeners are ES6 classes or constructor functions (called with `new`) with one or more **handlers**
+**Listeners** are ES6 classes or constructor functions (called with `new`) with one or more handlers
 
 ```js
 class CongratulateReferrer {
@@ -64,7 +51,7 @@ function CongratulateReferrer {
 }
 ```
 
-**Handlers** are methods in listener classes. Typically, Burns looks for the `hand;e` method in your class and calls that. However, you can choose to define a handler in a class for specific events, by using `on` + the UpperCased event name. In such a case, `handle` will NOT be called. For instance:
+**Handlers** are (non-static) methods in listener classes. Typically, Burns looks for the `handle` method in your listener and calls that. However, you can choose to define a handler for specific events, by using `on` + the UpperCased event name. In such a case, `handle` will NOT be called. For instance:
 
 
 ```js
@@ -75,36 +62,58 @@ class GenericListener {
 
 burns.register({
   'special-event': GenericListener,
-  'maggie-talks': GenericListener
+  'regular-event': GenericListener
 })
-burns.event('special_event'); // will call onSpecialEvent
-burns.event('maggie-talks'); // will call handle
+burns.event('special-event'); // will call onSpecialEvent
+burns.event('regular-event'); // will call handle
 ````
 
 ### Stopping Propagation
-Burns calls your event listeners in the specified order. This means that, in the code snippet below, dispatching the 'event' event will call the appropriate methods in ListenerOne first, and then those in ListenerTwo: 
+Burns calls your event listeners in the specified order. This means that, in the code snippet below, dispatching the 'event' event will call the appropriate method in ListenerOne first, and then the method in ListenerTwo: 
 
 ```js
 burns.register({
-  'event': [ListenerOne, ListenerTwo]
+  'userSignUp': [SendWelcomeEmail, CongratulateReferrer]
 })
 ```
 
 If you want to stop the next handlers for the event from being called, simply return false from the current handler:
 
 ```js
-class ListenerOne {
-    handle(data) { if (data.stop) return false; }
+class SendWelcomeEmail {
+    handle(data) {
+        emailUser(data.email);
+        if (data.referrer === null) {
+            return false;
+        }
+    }
 }
 
-class ListenerTwo {
-    handle(data) {} // won't be called
+class CongratulateReferrer {
+    handle(data) {} // won't be called if there is no referrer
 }
 
 ```
 
+### Dispatching events
+To dispatch an event, simply call ` event` with the name of the event:
+
+```js
+burns.event('postLiked');
+```
+
+You may also pass in a payload containing data to be transmitted with the event:
+
+```js
+burns.event('userSignUp', {
+    username: 'ayCarumba',
+    email: 'chunkylover53@aol.com',
+    referrer: 128,
+});
+```
+
 ### Using a Default Listener
-You may also specify a `defaultListener`. Burns will call this listener's handlers (`on{EventName}` if it exists, otherwise `handle`) only if you have not registered any listener for that event. For instance, in the following code snippet, `handle` will be called for `unregisteredEvent` and `onAnotherUnregisteredEvent` will be called for `anotherUnregisteredEvent`
+You may also specify a `defaultListener`. Burns will call this listener's handler (`on{EventName}` if it exists, otherwise `handle`) only if you have not registered any listener for that event. For instance, in the following code snippet, `handle` will be called for `unregisteredEvent` and `onAnotherUnregisteredEvent` will be called for `anotherUnregisteredEvent`
 
 ```js
 class CatchAll {
