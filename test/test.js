@@ -1,3 +1,5 @@
+'use strict';
+
 const expect = require('chai').expect;
 let sinon = require('sinon');
 let decache = require('decache');
