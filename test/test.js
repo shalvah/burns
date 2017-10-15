@@ -3,6 +3,7 @@
 const expect = require('chai').expect;
 let sinon = require('sinon');
 let decache = require('decache');
+let burns = require('../index');
 
 describe('Burns', function() {
 
@@ -14,10 +15,9 @@ describe('Burns', function() {
 
         it('should overwrite the global options', function() {
             class CatchAllHandler {};
-            require('../index').configure({
+            burns.configure({
                 defaultListener: CatchAllHandler
             });
-            let burns = require('../index');
             expect(burns.options.defaultListener).to.equal(CatchAllHandler);
         });
     });
@@ -35,11 +35,11 @@ describe('Burns', function() {
                 handle(data) { handler(data);}
             }
 
-            require('../index').register({
+            burns.register({
                 'event': Listener
             });
             const eventPayload = {key: 'value'};
-            require('../index').event('event', eventPayload);
+            burns.event('event', eventPayload);
 
             setTimeout(() => {
                 expect(handler.calledOnce).to.equal(true);
@@ -64,10 +64,10 @@ describe('Burns', function() {
                 handle() { handlerThree(); }
             }
 
-            require('../index').register({
+            burns.register({
                 'event': [ListenerOne, ListenerTwo, ListenerThree]
             });
-            require('../index').event('event');
+            burns.event('event');
 
             setTimeout(() => {
                 expect(handlerOne.calledOnce).to.equal(true);
@@ -93,10 +93,10 @@ describe('Burns', function() {
                 handle() { handlerThree(); }
             }
 
-            require('../index').register({
+            burns.register({
                 'event': [ListenerOne, ListenerTwo, ListenerThree]
             });
-            require('../index').event('event');
+            burns.event('event');
 
             setTimeout(() => {
                 expect(handlerOne.calledOnce).to.equal(true);
@@ -114,10 +114,10 @@ describe('Burns', function() {
                 handle() { handlerTwo(); }
             }
 
-            require('../index').register({
+            burns.register({
                 'test-event': Listener
             });
-            require('../index').event('test-event');
+            burns.event('test-event');
 
             setTimeout(() => {
                 expect(handlerOne.calledOnce).to.equal(true);
@@ -132,10 +132,10 @@ describe('Burns', function() {
                 handle() { defaultHandler(); }
             }
 
-            require('../index').configure({
+            burns.configure({
                 defaultListener: DefaultListener
             });
-            require('../index').event('test-event');
+            burns.event('test-event');
 
             setTimeout(() => {
                 expect(defaultHandler.calledOnce).to.equal(true);
@@ -154,7 +154,7 @@ describe('Burns', function() {
                 handle() { handlerOne(); }
             }
 
-            let burns = require('../index');
+            let burns = burns;
             burns.configure({
                 defaultListener: DefaultListener
             }).register({
