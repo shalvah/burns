@@ -4,7 +4,7 @@
   "description": "Manage application events without writing spaghetti code",
   "main": "index.js",
   "scripts": {
-    "test": "nyc mocha test/*"
+    "test": "nyc mocha test/* && nyc report --reporter=html"
   },
   "repository": {
     "type": "git",

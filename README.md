@@ -38,15 +38,15 @@ burns.register({
 ```js
 class CongratulateReferrer {
     handle(data) {
-        let email = makeEmail(`Congrats! ${data.user.name} signed up on your recommendation!`);
-        sendEmailTo(data.referrer.email, email);
+        let email = makeEmail(`Congrats! ${data.username} signed up on your recommendation!`);
+        sendEmailTo(data.referrer, email);
     }
 }
 
 function CongratulateReferrer {
   this.handle = function (data) {
-    var email = makeEmail(`Congrats! ${data.user.name} signed up on your recommendation!`);
-    sendEmailTo(data.referrer.email, email);
+    var email = makeEmail('Congrats!' + data.username + ' signed up on your recommendation!');
+    sendEmailTo(data.referrer, email);
   }
 }
 ```
@@ -73,7 +73,7 @@ Burns calls your event listeners in the specified order. This means that, in the
 
 ```js
 burns.register({
-  'userSignUp': [SendWelcomeEmail, CongratulateReferrer]
+  userSignUp: [SendWelcomeEmail, CongratulateReferrer]
 })
 ```
 
@@ -108,7 +108,7 @@ You may also pass in a payload containing data to be transmitted with the event:
 burns.event('userSignUp', {
     username: 'ayCarumba',
     email: 'chunkylover53@aol.com',
-    referrer: 128,
+    referrer: 'burns@cmburns.evil',
 });
 ```
 
