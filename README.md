@@ -1,9 +1,9 @@
 <h1 align="center">Burns</h1>
 
-<figure align="center">
+<p align="center">
   <img src="burns.gif">
-  <figcaption>Excellent</figcaption>
-</figure>
+  <em>Excellent</em>
+</p>
 
 [![npm version](https://badge.fury.io/js/burns.svg)](https://badge.fury.io/js/burns)
 
