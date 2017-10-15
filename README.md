@@ -6,6 +6,7 @@
 </p>
 
 [![npm version](https://badge.fury.io/js/burns.svg)](https://badge.fury.io/js/burns)
+[![Build Status](https://travis-ci.org/shalvah/burns.svg?branch=master)](https://travis-ci.org/shalvah/burns)
 
 Burns is a zero-dependency Node.js module that lets you manage application events in a clean and consistent manner
 
