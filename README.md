@@ -61,15 +61,15 @@ class GenericListener {
 }
 
 burns.register({
-  'special-event': GenericListener,
-  'regular-event': GenericListener
+  specialEvent: GenericListener,
+  regularEvent: GenericListener
 })
-burns.event('special-event'); // will call onSpecialEvent
-burns.event('regular-event'); // will call handle
+burns.event('specialEvent'); // will call onSpecialEvent
+burns.event('regularEvent'); // will call handle
 ````
 
 ### Stopping Propagation
-Burns calls your event listeners in the specified order. This means that, in the code snippet below, dispatching the 'event' event will call the appropriate method in ListenerOne first, and then the method in ListenerTwo: 
+Burns calls your event listeners in the specified order. This means that, in the code snippet below, dispatching the 'event' event will call the appropriate method in SendWelcomeEmail first, followed by the method in CongratulateReferrer: 
 
 ```js
 burns.register({
@@ -77,7 +77,7 @@ burns.register({
 })
 ```
 
-If you want to stop the next handlers for the event from being called, simply return false from the current handler:
+If you want to stop the next handlers for the event from being called, simply return `false` from the current handler:
 
 ```js
 class SendWelcomeEmail {
@@ -113,18 +113,30 @@ burns.event('userSignUp', {
 ```
 
 ### Using a Default Listener
-You may also specify a `defaultListener`. Burns will call this listener's handler (`on{EventName}` if it exists, otherwise `handle`) only if you have not registered any listener for that event. For instance, in the following code snippet, `handle` will be called for `unregisteredEvent` and `onAnotherUnregisteredEvent` will be called for `anotherUnregisteredEvent`
+You may also specify a `defaultListener`. Burns will call this listener's handler (`on{EventName}` if it exists, otherwise `handle`) only if you have not registered any listener for that event. For instance, in the code snippet below:
+ - `handle` method in `CatchAll` will be called for `unregisteredEvent`
+  - `onAnotherUnregisteredEvent` method in `CatchAll` will be called for `anotherUnregisteredEvent`
+ - `handle` method in `Listener` will be called for `registeredEvent`
 
 ```js
 class CatchAll {
     handle() {}
     onAnotherUnregisteredEvent() {}
 }
+
+class Listener {
+    handle() {}
+}
+
 burns.configure({
     defaultListener: CatchAll
+}).register({
+  registeredEvent: Listener
 });
+
 burns.event('unregisteredEvent');
 burns.event('anotherUnregisteredEvent');
+burns.event('registeredEvent');
 ```
 
 ### Event Names

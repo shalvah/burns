@@ -6,31 +6,24 @@ class Burns {
     constructor() {
         this.options = {};
         this.events = {};
-        this.listeners = {};
+        this.queuedListeners = {};
     }
 
-    configure(options = {}) {
+    configure(options) {
         this.options = Object.assign(this.options, options);
         return this;
     }
 
-    unqueueListeners(eventName) {
-        for (let listenerId of this.listeners[eventName]) {
-            clearTimeout(listenerId);
-        }
+    register(events) {
+        this.events = events;
+        return this;
     }
 
     event(eventName, eventData = {}) {
-        this.callListeners(eventName, eventData);
-    };
-
-    uppercaseWords(string) {
-        return string.split(/[^a-zA-Z0-9]+/)
-            .map((word) => word[0].toUpperCase() + word.slice(1))
-            .join('');
+        this.queueListeners(eventName, eventData);
     }
 
-    callListeners(eventName, eventData) {
+    queueListeners(eventName, eventData) {
         let listeners = this.events[eventName];
 
         // fallback to default listener
@@ -39,31 +32,38 @@ class Burns {
                 return;
             }
         }
+
         listeners = Array.isArray(listeners) ? listeners : [listeners];
-        this.listeners[eventName] = [];
-        // queue the first listener
-        let i = 0;
-        while (i < listeners.length) {
-            let handlerClass = new listeners[i]();
+        this.queuedListeners[eventName] = [];
+
+        for (let listener of listeners) {
+            let handlerClass = new listener();
             let methodName = 'on' + this.uppercaseWords(eventName);
             let handlerMethod = (typeof handlerClass[methodName] === 'function')
                 ? methodName : 'handle';
-            let listenerId = setTimeout(() => {
+            let listenerRef = setTimeout(() => {
                 let continuePropagation = handlerClass[handlerMethod](eventData);
                 // stop the next listeners if this one says so
                 if (continuePropagation === false) {
-                    this.unqueueListeners(eventName);
+                    this.dequeueListeners(eventName);
                 }
             }, 0);
-            this.listeners[eventName].push(listenerId);
-            i++;
+            this.queuedListeners[eventName].push(listenerRef);
         }
     }
 
-    register(events) {
-        this.events = events;
-        return this;
+    dequeueListeners(eventName) {
+        for (let listenerRef of this.queuedListeners[eventName]) {
+            clearTimeout(listenerRef);
+        }
     }
+
+    uppercaseWords(string) {
+        return string.split(/[^a-zA-Z0-9]+/)
+            .map((word) => word[0].toUpperCase() + word.slice(1))
+            .join('');
+    }
+
 }
 
 module.exports = new Burns();

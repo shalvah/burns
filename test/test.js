@@ -1,8 +1,8 @@
 'use strict';
 
 const expect = require('chai').expect;
-let sinon = require('sinon');
-let decache = require('decache');
+const sinon = require('sinon');
+const decache = require('decache');
 
 describe('Burns', function() {
 
@@ -13,7 +13,7 @@ describe('Burns', function() {
         });
 
         it('should overwrite the global options', function() {
-            class CatchAllHandler {};
+            class CatchAllHandler {}
             require('../index').configure({
                 defaultListener: CatchAllHandler
             });
