@@ -1,9 +1,13 @@
-<p align="center"><img src="burns.gif"><p>
 <h1 align="center">Burns</h1>
+
+<figure align="center">
+  <img src="burns.gif">
+  <figcaption>Excellent</figcaption>
+</figure>
 
 [![npm version](https://badge.fury.io/js/burns.svg)](https://badge.fury.io/js/burns)
 
-Burns is a zero-dependency NodeJS module that lets you manage your application events without writing spaghetti code
+Burns is a zero-dependency Node.js module that lets you manage your application events without writing spaghetti code
 
 ## Getting Started
 ```
@@ -117,7 +121,7 @@ burns.event('anotherUnregisteredEvent');
 By default, when looking for specific handlers, Burns will use `on` + the UpperCase form of your event name. Any non-alphanumeric characters will be removed. Thus, `'mrPlow'`, `'mr-plow'`, `'mr plow'`, `'MrPlow'`, and `'mr_plow'` will all be handled by the method `onMrPlow` if you have one defined (otherwise `handle`). However, it is recommended that you follow a fixed convention for naming your events.
 
 ## But Node already supports events natively!
-Yes, and that's a great thing for handling events at lower levels in your code base (for instance, on open of a file, on read of a stream). When dealing with events at a higher level, Burns allows you to define all your app's events in one central location (the `register` function), and write robust handlers (which you should probably put in a `listeners` directory).
+Yes, and that's a great thing for handling events at lower levels in your code base (for instance, on open of a file, on read of a stream). When dealing with events at a higher level (such as a new user signing up), Burns allows you to define all your app's events in one central location (the `register` function), and write robust handlers (which you should probably put in a `listeners` directory).
 
 ## Asynchronous vs. Synchronous
 [Unlike NodeJS' inbuilt events system](https://nodejs.org/api/events.html#events_asynchronous_vs_synchronous), Burns calls your event listeners asynchronously (still in the defined order, though). That is, the functions are queued behind whatever I/O event callbacks that are already in the event queue.
