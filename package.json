@@ -4,7 +4,7 @@
   "description": "Manage application events without writing spaghetti code",
   "main": "index.js",
   "scripts": {
-    "test": "istanbul cover _mocha -- -R spec test/*"
+    "test": "nyc mocha test/*"
   },
   "repository": {
     "type": "git",
@@ -24,6 +24,7 @@
     "chai": "^4.1.2",
     "decache": "^4.1.0",
     "mocha": "^4.0.1",
+    "nyc": "^11.2.1",
     "sinon": "^4.0.1"
   }
 }

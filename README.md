@@ -7,7 +7,7 @@
 
 [![npm version](https://badge.fury.io/js/burns.svg)](https://badge.fury.io/js/burns)
 
-Burns is a zero-dependency Node.js module that lets you manage your application events without writing spaghetti code
+Burns is a zero-dependency Node.js module that lets you manage application events in a clean and consistent manner
 
 ## Getting Started
 ```
@@ -32,7 +32,7 @@ burns.event('userSignUp', { username: 'ayCarumba' });
 ```
 
 ## Registering Events
-To register your events with Burns, call `Burns#register` with an object with event names as keys and one or more event listeners as value:
+To register your events with Burns, call `Burns#register` with an object with event names as keys and one or more event listeners as values:
 
 ```js
 burns.register({
@@ -124,7 +124,7 @@ By default, when looking for specific handlers, Burns will use `on` + the UpperC
 Yes, and that's a great thing for handling events at lower levels in your code base (for instance, on open of a file, on read of a stream). When dealing with events at a higher level (such as a new user signing up), Burns allows you to define all your app's events in one central location (the `register` function), and write robust handlers (which you should probably put in a `listeners` directory).
 
 ## Asynchronous vs. Synchronous
-[Unlike NodeJS' inbuilt events system](https://nodejs.org/api/events.html#events_asynchronous_vs_synchronous), Burns calls your event listeners asynchronously (still in the defined order, though). That is, the functions are queued behind whatever I/O event callbacks that are already in the event queue.
+[Unlike NodeJS' inbuilt events system](https://nodejs.org/api/events.html#events_asynchronous_vs_synchronous), Burns calls your event listeners asynchronously (still in the defined order, though). That is, the functions are queued behind whatever I/O event callbacks that are already in the event queue. This means that you can send a response to your user imediately, while your event gets handled in the background
 
 ## Like it?
 Star and share, and give me a shout out [on Twitter](http://twitter.com/theshalvah)

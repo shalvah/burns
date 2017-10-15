@@ -4,7 +4,7 @@ let decache = require('decache');
 
 describe('Burns', function() {
 
-    describe('#setup()', function() {
+    describe('#configure()', function() {
 
         afterEach(function () {
             decache('../index');
