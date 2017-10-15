@@ -1,6 +1,6 @@
 {
   "name": "burns",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Manage application events without writing spaghetti code",
   "main": "index.js",
   "scripts": {
