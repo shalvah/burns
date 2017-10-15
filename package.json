@@ -1,0 +1,29 @@
+{
+  "name": "burns",
+  "version": "1.0.0",
+  "description": "Manage application events without writing spaghetti code",
+  "main": "index.js",
+  "scripts": {
+    "test": "istanbul cover _mocha -- -R spec test/*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shalvah/burns.git"
+  },
+  "keywords": [
+    "events",
+    "listeners"
+  ],
+  "author": "Shalvah Adebayo <shalvah.adebayo@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/shalvah/burns/issues"
+  },
+  "homepage": "https://github.com/shalvah/burns#readme",
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "decache": "^4.1.0",
+    "mocha": "^4.0.1",
+    "sinon": "^4.0.1"
+  }
+}
