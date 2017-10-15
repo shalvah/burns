@@ -1,7 +1,7 @@
 <h1 align="center">Burns</h1>
 
 <p align="center">
-  <img src="burns.gif">
+  <img src="burns.gif"><br>
   <em>Excellent</em>
 </p>
 
