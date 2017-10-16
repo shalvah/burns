@@ -69,7 +69,7 @@ burns.event('regularEvent'); // will call handle
 ````
 
 ### Stopping Propagation
-Burns calls your event listeners in the specified order. This means that, in the code snippet below, dispatching the 'event' event will call the appropriate method in SendWelcomeEmail first, followed by the method in CongratulateReferrer: 
+Burns calls your event listeners in the specified order. This means that, in the code snippet below, dispatching the `userSignUp` event will call the handler in `SendWelcomeEmail` first, followed by the handler in `CongratulateReferrer`: 
 
 ```js
 burns.register({
@@ -111,6 +111,7 @@ burns.event('userSignUp', {
     referrer: 'burns@cmburns.evil',
 });
 ```
+This object will be passed as an argument to the handler method.
 
 ### Using a Default Listener
 You may also specify a `defaultListener`. Burns will call this listener's handler (`on{EventName}` if it exists, otherwise `handle`) only if you have not registered any listener for that event. For instance, in the code snippet below:
