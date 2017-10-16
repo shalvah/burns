@@ -3,4 +3,4 @@ coverage/
 node_modules/
 .idea/
 .nyc_output/
-lib/
+*.gif
