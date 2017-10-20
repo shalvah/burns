@@ -20,7 +20,7 @@ let burns = require('burns');
 ```
 
 ### Registering Events
-To register your events with Burns, call ` register` with an object with event names as keys and one or more event listeners as values:
+To register your events, call ` register` with an object with event names as keys and one or more event listeners as values:
 
 ```js
 burns.register({
@@ -29,6 +29,24 @@ burns.register({
       SendEmail,
       CongratulateReferrer
     ]
+});
+```
+
+Burns also allows you to register events at multiple locations, so, for a large application, you can have each application component define its own events and listeners.
+
+```js
+// app/users/service.js
+burns.register({
+    userFollowed: NotifyUser,
+    userSignUp: [
+      SendEmail,
+      CongratulateReferrer
+    ]
+});
+
+// app/posts/service.js
+burns.register({
+    postLiked: NotifyAuthor,
 });
 ```
 
@@ -43,7 +61,7 @@ class CongratulateReferrer {
     }
 }
 
-function CongratulateReferrer {
+function CongratulateReferrer () {
   this.handle = function (data) {
     var email = makeEmail('Congrats!' + data.username + ' signed up on your recommendation!');
     sendEmailTo(data.referrer, email);

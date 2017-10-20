@@ -12,13 +12,53 @@ describe('Burns', function() {
             decache('../index');
         });
 
-        it('should overwrite the global options', function() {
+        it('should overwrite the default options', function() {
             class CatchAllHandler {}
             require('../index').configure({
                 defaultListener: CatchAllHandler
             });
             let burns = require('../index');
             expect(burns.options.defaultListener).to.equal(CatchAllHandler);
+        });
+    });
+
+    describe('#register()', function() {
+
+        afterEach(function () {
+            decache('../index');
+        });
+
+        it('should allow for registering events at different places', function() {
+            require('../index').register({
+                eventOne: []
+            });
+            require('../index').register({
+                eventTwo: []
+            });
+            let burns = require('../index');
+            expect(burns.events).to.be.an('object').that.has.all.keys(['eventOne', 'eventTwo']);
+        });
+
+        it('should allow for adding event listeners at different places', function() {
+            let handlerOne = sinon.spy();
+            let handlerTwo = sinon.spy();
+
+            class ListenerOne {
+                handle() { handlerOne();}
+            }
+
+            class ListenerTwo {
+                handle() { handlerTwo(); }
+            }
+            require('../index').register({
+                event: ListenerOne
+            });
+            require('../index').register({
+                event: ListenerTwo
+            });
+            let burns = require('../index');
+            expect(burns.events).to.be.an('object').that.has.key('event');
+            expect(burns.events.event).to.be.an('array').that.has.members([ListenerOne, ListenerTwo]);
         });
     });
 
