@@ -40,25 +40,43 @@ describe('Burns', function() {
         });
 
         it('should allow for adding event listeners at different places', function() {
-            let handlerOne = sinon.spy();
-            let handlerTwo = sinon.spy();
-
             class ListenerOne {
-                handle() { handlerOne();}
+                handle() {}
             }
 
             class ListenerTwo {
-                handle() { handlerTwo(); }
+                handle() {}
             }
-            require('../index').register({
-                event: ListenerOne
-            });
-            require('../index').register({
-                event: ListenerTwo
-            });
+
+            class ListenerThree {
+                handle() {}
+            }
+
+            class ListenerFour {
+                handle() {}
+            }
+
             let burns = require('../index');
-            expect(burns.events).to.be.an('object').that.has.key('event');
-            expect(burns.events.event).to.be.an('array').that.has.members([ListenerOne, ListenerTwo]);
+            burns.register({
+                eventA: [ListenerOne, ListenerTwo],
+                eventB: ListenerOne
+            });
+            burns.register({
+                eventA: [ListenerThree],
+                eventB: ListenerTwo
+            });
+            burns.register({
+                eventA: ListenerFour,
+                eventB: [ListenerThree, ListenerFour]
+            });
+
+            expect(burns.events).to.be.an('object').that.has.all.keys('eventA', 'eventB');
+            expect(burns.events.eventA)
+                .to.be.an('array')
+                .that.has.members([ListenerOne, ListenerTwo, ListenerThree, ListenerFour]);
+            expect(burns.events.eventB)
+                .to.be.an('array')
+                .that.has.members([ListenerOne, ListenerTwo, ListenerThree, ListenerFour]);
         });
     });
 

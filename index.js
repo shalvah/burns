@@ -15,11 +15,12 @@ class Burns {
     }
 
     register(events) {
-        for (let event in events) {
-            if (this.events[event]) {
-                this.events[event] = [...this.events[event], events[event]];
+        for (let eventName in events) {
+            let listeners = Array.isArray(events[eventName]) ? events[eventName] : [events[eventName]];
+            if (this.events[eventName]) {
+                this.events[eventName] = [...this.events[eventName], ...listeners];
             } else {
-                this.events[event] = Array.isArray(events[event]) ? events[event] : [events[event]];
+                this.events[eventName] = listeners;
             }
         }
         return this;
