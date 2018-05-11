@@ -1,6 +1,5 @@
 'use strict';
 
-
 class Burns {
 
     constructor() {
@@ -14,7 +13,7 @@ class Burns {
         return this;
     }
 
-    register(events) {
+    registerEvents(events) {
         for (let eventName in events) {
             let listeners = Array.isArray(events[eventName]) ? events[eventName] : [events[eventName]];
             if (this.events[eventName]) {
@@ -26,7 +25,7 @@ class Burns {
         return this;
     }
 
-    event(eventName, eventData = {}) {
+    dispatch(eventName, eventData = {}) {
         this.queueListeners(eventName, eventData);
     }
 

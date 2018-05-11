@@ -22,17 +22,17 @@ describe('Burns', function() {
         });
     });
 
-    describe('#register()', function() {
+    describe('#registerEvents()', function() {
 
         afterEach(function () {
             decache('../src/burns');
         });
 
         it('should allow for registering events at different places', function() {
-            require('../src/burns').register({
+            require('../src/burns').registerEvents({
                 eventOne: []
             });
-            require('../src/burns').register({
+            require('../src/burns').registerEvents({
                 eventTwo: []
             });
             let burns = require('../src/burns');
@@ -57,15 +57,15 @@ describe('Burns', function() {
             }
 
             let burns = require('../src/burns');
-            burns.register({
+            burns.registerEvents({
                 eventA: [ListenerOne, ListenerTwo],
                 eventB: ListenerOne
             });
-            burns.register({
+            burns.registerEvents({
                 eventA: [ListenerThree],
                 eventB: ListenerTwo
             });
-            burns.register({
+            burns.registerEvents({
                 eventA: ListenerFour,
                 eventB: [ListenerThree, ListenerFour]
             });
@@ -80,7 +80,7 @@ describe('Burns', function() {
         });
     });
 
-    describe('#event()', function() {
+    describe('#dispatch()', function() {
 
         afterEach(function () {
             decache('../src/burns');
@@ -93,11 +93,11 @@ describe('Burns', function() {
                 handle(data) { handler(data);}
             }
 
-            require('../src/burns').register({
+            require('../src/burns').registerEvents({
                 'event': Listener
             });
             const eventPayload = {key: 'value'};
-            require('../src/burns').event('event', eventPayload);
+            require('../src/burns').dispatch('event', eventPayload);
 
             setTimeout(() => {
                 expect(handler.calledOnce).to.equal(true);
@@ -122,10 +122,10 @@ describe('Burns', function() {
                 handle() { handlerThree(); }
             }
 
-            require('../src/burns').register({
+            require('../src/burns').registerEvents({
                 'event': [ListenerOne, ListenerTwo, ListenerThree]
             });
-            require('../src/burns').event('event');
+            require('../src/burns').dispatch('event');
 
             setTimeout(() => {
                 expect(handlerOne.calledOnce).to.equal(true);
@@ -151,10 +151,10 @@ describe('Burns', function() {
                 handle() { handlerThree(); }
             }
 
-            require('../src/burns').register({
+            require('../src/burns').registerEvents({
                 'event': [ListenerOne, ListenerTwo, ListenerThree]
             });
-            require('../src/burns').event('event');
+            require('../src/burns').dispatch('event');
 
             setTimeout(() => {
                 expect(handlerOne.calledOnce).to.equal(true);
@@ -172,10 +172,10 @@ describe('Burns', function() {
                 handle() { handlerTwo(); }
             }
 
-            require('../src/burns').register({
+            require('../src/burns').registerEvents({
                 'test-event': Listener
             });
-            require('../src/burns').event('test-event');
+            require('../src/burns').dispatch('test-event');
 
             setTimeout(() => {
                 expect(handlerOne.calledOnce).to.equal(true);
@@ -193,7 +193,7 @@ describe('Burns', function() {
             require('../src/burns').configure({
                 defaultListener: DefaultListener
             });
-            require('../src/burns').event('test-event');
+            require('../src/burns').dispatch('test-event');
 
             setTimeout(() => {
                 expect(defaultHandler.calledOnce).to.equal(true);
@@ -215,9 +215,9 @@ describe('Burns', function() {
             let burns = require('../src/burns');
             burns.configure({
                 defaultListener: DefaultListener
-            }).register({
+            }).registerEvents({
                 'test-event': ListenerOne
-            }).event('test-event');
+            }).dispatch('test-event');
 
             setTimeout(() => {
                 expect(handlerOne.calledOnce).to.equal(true);
