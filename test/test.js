@@ -13,12 +13,12 @@ describe('Burns', function() {
         });
 
         it('should overwrite the default options', function() {
-            class CatchAllHandler {}
+            let catchAllHandler = () => {};
             require('../src/burns').configure({
-                defaultListener: CatchAllHandler
+                defaultHandler: catchAllHandler
             });
             let burns = require('../src/burns');
-            expect(burns.options.defaultListener).to.equal(CatchAllHandler);
+            expect(burns.options.defaultHandler).to.equal(catchAllHandler);
         });
     });
 
@@ -39,44 +39,33 @@ describe('Burns', function() {
             expect(burns.events).to.be.an('object').that.has.all.keys(['eventOne', 'eventTwo']);
         });
 
-        it('should allow for adding event listeners at different places', function() {
-            class ListenerOne {
-                handle() {}
-            }
-
-            class ListenerTwo {
-                handle() {}
-            }
-
-            class ListenerThree {
-                handle() {}
-            }
-
-            class ListenerFour {
-                handle() {}
-            }
+        it('should allow for adding event handlers at different places', function() {
+            let handlerOne = () => {};
+            let handlerTwo = () => {};
+            let handlerThree = () => {};
+            let handlerFour = () => {};
 
             let burns = require('../src/burns');
             burns.registerEvents({
-                eventA: [ListenerOne, ListenerTwo],
-                eventB: ListenerOne
+                eventA: [handlerOne, handlerTwo],
+                eventB: handlerOne
             });
             burns.registerEvents({
-                eventA: [ListenerThree],
-                eventB: ListenerTwo
+                eventA: [handlerThree],
+                eventB: handlerTwo
             });
             burns.registerEvents({
-                eventA: ListenerFour,
-                eventB: [ListenerThree, ListenerFour]
+                eventA: handlerFour,
+                eventB: [handlerThree, handlerFour]
             });
 
             expect(burns.events).to.be.an('object').that.has.all.keys('eventA', 'eventB');
             expect(burns.events.eventA)
                 .to.be.an('array')
-                .that.has.members([ListenerOne, ListenerTwo, ListenerThree, ListenerFour]);
+                .that.has.members([handlerOne, handlerTwo, handlerThree, handlerFour]);
             expect(burns.events.eventB)
                 .to.be.an('array')
-                .that.has.members([ListenerOne, ListenerTwo, ListenerThree, ListenerFour]);
+                .that.has.members([handlerOne, handlerTwo, handlerThree, handlerFour]);
         });
     });
 
@@ -86,15 +75,12 @@ describe('Burns', function() {
             decache('../src/burns');
         });
 
-        it('should call listeners for an event with the passed payload', function() {
+        it('should call handlers for an event with the passed payload', function() {
 
-            let handler = sinon.spy();
-            class Listener {
-                handle(data) { handler(data);}
-            }
+            let handler = (data) => sinon.spy();
 
             require('../src/burns').registerEvents({
-                'event': Listener
+                'event': handler
             });
             const eventPayload = {key: 'value'};
             require('../src/burns').dispatch('event', eventPayload);
@@ -105,25 +91,13 @@ describe('Burns', function() {
             }, 0);
         });
 
-        it('should call listeners for an event in the order they were defined', function() {
-            let handlerOne = sinon.spy();
-            let handlerTwo = sinon.spy();
-            let handlerThree = sinon.spy();
-
-            class ListenerOne {
-                handle() { handlerOne();}
-            }
-
-            class ListenerTwo {
-                handle() { handlerTwo(); }
-            }
-
-            class ListenerThree {
-                handle() { handlerThree(); }
-            }
+        it('should call handlers for an event in the order they were defined', function() {
+            let handlerOne = () => sinon.spy();
+            let handlerTwo = () => sinon.spy();
+            let handlerThree = () => sinon.spy();
 
             require('../src/burns').registerEvents({
-                'event': [ListenerOne, ListenerTwo, ListenerThree]
+                'event': [handlerOne, handlerTwo, handlerThree]
             });
             require('../src/burns').dispatch('event');
 
@@ -134,25 +108,13 @@ describe('Burns', function() {
             }, 0);
         });
 
-        it('should not call next listeners for an event if one returns false', function() {
-            let handlerOne = sinon.spy();
-            let handlerTwo = sinon.spy();
-            let handlerThree = sinon.spy();
-
-            class ListenerOne {
-                handle() { handlerOne(); return false; }
-            }
-
-            class ListenerTwo {
-                handle() { handlerTwo(); }
-            }
-
-            class ListenerThree {
-                handle() { handlerThree(); }
-            }
+        it('should not call remaining handlers for an event if one returns false', function() {
+            let handlerOne = () => sinon.spy();
+            let handlerTwo = () => sinon.spy();
+            let handlerThree = () => sinon.spy();
 
             require('../src/burns').registerEvents({
-                'event': [ListenerOne, ListenerTwo, ListenerThree]
+                'event': [handlerOne, handlerTwo, handlerThree]
             });
             require('../src/burns').dispatch('event');
 
@@ -163,35 +125,11 @@ describe('Burns', function() {
             }, 0);
         });
 
-        it('should call on{EventName}() rather than handle() where present', function() {
-            let handlerOne = sinon.spy();
-            let handlerTwo = sinon.spy();
-
-            class Listener {
-                onTestEvent() { handlerOne(); }
-                handle() { handlerTwo(); }
-            }
-
-            require('../src/burns').registerEvents({
-                'test-event': Listener
-            });
-            require('../src/burns').dispatch('test-event');
-
-            setTimeout(() => {
-                expect(handlerOne.calledOnce).to.equal(true);
-                expect(handlerTwo.notCalled).to.equal(true);
-            }, 0);
-        });
-
-        it('should call the default listener if event not registered', function() {
-            let defaultHandler = sinon.spy();
-
-            class DefaultListener {
-                handle() { defaultHandler(); }
-            }
+        it('should call the default handler if event not registered', function() {
+            let defaultHandler = () => sinon.spy();
 
             require('../src/burns').configure({
-                defaultListener: DefaultListener
+                defaultHandler
             });
             require('../src/burns').dispatch('test-event');
 
@@ -200,23 +138,15 @@ describe('Burns', function() {
             }, 0);
         });
 
-        it('should NOT call the default listener if event registered', function() {
-            let defaultHandler = sinon.spy();
-            let handlerOne = sinon.spy();
-
-            class DefaultListener {
-                handle() { defaultHandler(); }
-            }
-
-            class ListenerOne {
-                handle() { handlerOne(); }
-            }
+        it('should NOT call the default handler if event registered', function() {
+            let defaultHandler = () => sinon.spy();
+            let handlerOne = () => sinon.spy();
 
             let burns = require('../src/burns');
             burns.configure({
-                defaultListener: DefaultListener
+                defaultHandler
             }).registerEvents({
-                'test-event': ListenerOne
+                'test-event': handlerOne
             }).dispatch('test-event');
 
             setTimeout(() => {

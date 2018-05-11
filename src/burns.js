@@ -5,7 +5,7 @@ class Burns {
     constructor() {
         this.options = {};
         this.events = {};
-        this.queuedListeners = {};
+        this.queuedHandlers = {};
     }
 
     configure(options) {
@@ -15,59 +15,49 @@ class Burns {
 
     registerEvents(events) {
         for (let eventName in events) {
-            let listeners = Array.isArray(events[eventName]) ? events[eventName] : [events[eventName]];
+            let handlers = Array.isArray(events[eventName]) ? events[eventName] : [events[eventName]];
             if (this.events[eventName]) {
-                this.events[eventName] = [...this.events[eventName], ...listeners];
+                this.events[eventName] = [...this.events[eventName], ...handlers];
             } else {
-                this.events[eventName] = listeners;
+                this.events[eventName] = handlers;
             }
         }
         return this;
     }
 
     dispatch(eventName, eventData = {}) {
-        this.queueListeners(eventName, eventData);
+        this.queueHandlers(eventName, eventData);
     }
 
-    queueListeners(eventName, eventData) {
-        let listeners = this.events[eventName];
+    queueHandlers(eventName, eventData) {
+        let handlers = this.events[eventName];
 
-        // fallback to default listener
-        if (!listeners) {
-            if (!(listeners = this.options.defaultListener)) {
+        // fallback to default handler
+        if (!handlers || handlers.length === 0) {
+            if (!(handlers = this.options.defaultHandler)) {
                 return;
             }
         }
 
-        listeners = Array.isArray(listeners) ? listeners : [listeners];
-        this.queuedListeners[eventName] = [];
+        handlers = Array.isArray(handlers) ? handlers : [handlers];
+        this.queuedHandlers[eventName] = [];
 
-        for (let listener of listeners) {
-            let handlerClass = new listener();
-            let methodName = 'on' + this.uppercaseWords(eventName);
-            let handlerMethod = (typeof handlerClass[methodName] === 'function')
-                ? methodName : 'handle';
-            let listenerRef = setTimeout(() => {
-                let continuePropagation = handlerClass[handlerMethod](eventData);
-                // stop the next listeners if this one says so
+        for (let handlerMethod of handlers) {
+            let handlerRef = setTimeout(() => {
+                let continuePropagation = handlerMethod(eventData);
+                // stop the next handlers if this one says so
                 if (continuePropagation === false) {
-                    this.dequeueListeners(eventName);
+                    this.dequeueHandlers(eventName);
                 }
             }, 0);
-            this.queuedListeners[eventName].push(listenerRef);
+            this.queuedHandlers[eventName].push(handlerRef);
         }
     }
 
-    dequeueListeners(eventName) {
-        for (let listenerRef of this.queuedListeners[eventName]) {
-            clearTimeout(listenerRef);
+    dequeueHandlers(eventName) {
+        for (let handlerRef of this.queuedHandlers[eventName]) {
+            clearTimeout(handlerRef);
         }
-    }
-
-    uppercaseWords(string) {
-        return string.split(/[^a-zA-Z0-9]+/)
-            .map((word) => word[0].toUpperCase() + word.slice(1))
-            .join('');
     }
 
 }
