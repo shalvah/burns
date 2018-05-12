@@ -8,7 +8,12 @@ describe('Burns', function() {
 
     describe('#dispatch()', function() {
 
+        beforeEach(function () {
+            sinon.spy(console, 'log');
+        });
+
         afterEach(function () {
+            console.log.restore();
             decache('../../src/burns');
         });
 
@@ -88,6 +93,30 @@ describe('Burns', function() {
             setTimeout(() => {
                 expect(handlerOne.calledOnce).to.equal(true);
                 expect(defaultHandler.notCalled).to.equal(true);
+                done();
+            }, 0);
+        });
+
+        it('broadcasts the event if broadcastOn set', function(done) {
+            const handler = sinon.spy();
+
+            const burns = require('../../src/burns');
+            burns.configure({
+                broadcaster: 'log'
+            }).registerEvents({
+                theEvent: {
+                    handlers: [ handler ],
+                    broadcastOn: 'theChannel'
+                }
+            }).dispatch('theEvent');
+
+            expect(console.log.calledOnce).to.equal(true);
+            const logOutput = console.log.getCall(0).args[0];
+            expect(logOutput).to.contain('theChannel');
+            expect(logOutput).to.contain('theEvent');
+
+            setTimeout(() => {
+                expect(handler.calledOnce).to.equal(true);
                 done();
             }, 0);
         });

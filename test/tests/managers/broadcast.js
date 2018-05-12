@@ -66,7 +66,7 @@ describe('Broadcast manager', function() {
             broadcastManager.broadcast('theEvent', { the: 'payload' });
             expect(mockLogBroadcaster.broadcast.calledOnce).to.equal(true);
             expect(mockPusherBroadcaster.broadcast.calledOnce).to.equal(false);
-            mockLogBroadcaster.broadcast.reset();
+            mockLogBroadcaster.broadcast.resetHistory();
 
             mockConfig = makeMockConfig({ broadcaster: 'pusher' });
             broadcastManager = require('../../../src/managers/broadcast')(mockConfig, mockEvents, mockBroadcasters);
