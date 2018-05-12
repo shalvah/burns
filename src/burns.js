@@ -14,14 +14,14 @@ class Burns {
     }
 
     registerEvents(events) {
-        for (let eventName in events) {
-            let handlers = Array.isArray(events[eventName]) ? events[eventName] : [events[eventName]];
+        Object.entries(events).forEach(([eventName, eventConfig]) => {
+            let handlers = Array.isArray(eventConfig) ? eventConfig : [eventConfig];
             if (this.events[eventName]) {
                 this.events[eventName] = [...this.events[eventName], ...handlers];
             } else {
                 this.events[eventName] = handlers;
             }
-        }
+        });
         return this;
     }
 
