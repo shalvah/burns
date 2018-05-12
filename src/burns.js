@@ -1,8 +1,9 @@
 'use strict';
 
-const config = require('./managers/config');
-const eventsManager = require('./managers/events');
-const eventDispatcher = require('./managers/dispatch')(config, eventsManager);
+const config = require('./repositories/config');
+const events = require('./repositories/events');
+const eventDispatcher = require('./managers/dispatch')(config, events);
+const broadcastManager = require('./managers/broadcast')(config, events);
 
 class Burns {
 
@@ -11,13 +12,14 @@ class Burns {
         return this;
     }
 
-    registerEvents(events) {
-        eventsManager.addEvents(events);
+    registerEvents(newEvents) {
+        events.add(newEvents);
         return this;
     }
 
-    dispatch(eventName, eventData = {}) {
+    dispatch(eventName, eventData = {}, { exclude = null } = {}) {
         eventDispatcher.dispatch(eventName, eventData);
+        broadcastManager.broadcast(eventName, eventData, { exclude });
         return this;
     }
 
