@@ -57,10 +57,10 @@ describe('Burns', function() {
             });
 
             expect(burns.events).to.be.an('object').that.has.all.keys('eventA', 'eventB');
-            expect(burns.events.eventA)
+            expect(burns.events.eventA.handlers)
                 .to.be.an('array')
                 .that.has.members([handlerOne, handlerTwo, handlerThree, handlerFour]);
-            expect(burns.events.eventB)
+            expect(burns.events.eventB.handlers)
                 .to.be.an('array')
                 .that.has.members([handlerOne, handlerTwo, handlerThree, handlerFour]);
             done();

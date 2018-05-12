@@ -15,14 +15,29 @@ class Burns {
 
     registerEvents(events) {
         Object.entries(events).forEach(([eventName, eventConfig]) => {
-            let handlers = Array.isArray(eventConfig) ? eventConfig : [eventConfig];
-            if (this.events[eventName]) {
-                this.events[eventName] = [...this.events[eventName], ...handlers];
+            if (Array.isArray(eventConfig)) {
+                // we're dealing with a list of handlers
+                this.addEventHandlers(eventName, ...eventConfig);
+            } else if (typeof eventConfig === 'function') {
+                //a single event handler
+                this.addEventHandlers(eventName, eventConfig);
             } else {
-                this.events[eventName] = handlers;
+                // configuration options for the event
+                this.updateEventConfig(eventName, eventConfig);
             }
         });
         return this;
+    }
+
+    addEventHandlers(eventName, ...handlers) {
+        if (this.events[eventName] && this.events[eventName].handlers) {
+            handlers = [...this.events[eventName].handlers, ...handlers];
+        }
+        this.updateEventConfig(eventName, { handlers });
+    }
+
+    updateEventConfig(eventName, config) {
+        this.events[eventName] = config;
     }
 
     dispatch(eventName, eventData = {}) {
@@ -30,16 +45,16 @@ class Burns {
     }
 
     queueHandlers(eventName, eventData) {
-        let handlers = this.events[eventName];
+        let eventConfig = this.events[eventName];
 
-        // fallback to default handler
-        if (!handlers || handlers.length === 0) {
-            if (!(handlers = this.options.defaultHandler)) {
-                return;
-            }
+        let handlers;
+        if (eventConfig && eventConfig.handlers && eventConfig.handlers.length > 0) {
+            handlers = eventConfig.handlers;
+        } else {
+            if (!this.options.defaultHandler) return;
+            handlers = [this.options.defaultHandler];
         }
 
-        handlers = Array.isArray(handlers) ? handlers : [handlers];
         this.queuedHandlers[eventName] = [];
 
         for (let handlerMethod of handlers) {
