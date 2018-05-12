@@ -1,15 +1,16 @@
 'use strict';
 
+const config = require('./managers/config');
+
 class Burns {
 
     constructor() {
-        this.options = {};
         this.events = {};
         this.queuedHandlers = {};
     }
 
-    configure(options) {
-        this.options = Object.assign(this.options, options);
+    configure({ defaultHandler, broadcaster, pusher } = {}) {
+        config.set({ defaultHandler, broadcaster, pusher });
         return this;
     }
 
@@ -51,8 +52,8 @@ class Burns {
         if (eventConfig && eventConfig.handlers && eventConfig.handlers.length > 0) {
             handlers = eventConfig.handlers;
         } else {
-            if (!this.options.defaultHandler) return;
-            handlers = [this.options.defaultHandler];
+            if (!config.get('defaultHandler')) return;
+            handlers = [config.get('defaultHandler')];
         }
 
         this.queuedHandlers[eventName] = [];

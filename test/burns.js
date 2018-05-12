@@ -6,29 +6,13 @@ const decache = require('decache');
 
 describe('Burns', function() {
 
-    describe('#configure()', function() {
-
-        afterEach(function () {
-            decache('../src/burns');
-        });
-
-        it('should overwrite the default options', function(done) {
-            const catchAllHandler = () => {}
-            const burns = require('../src/burns');
-            burns.configure({ defaultHandler: catchAllHandler });
-
-            expect(burns.options.defaultHandler).to.equal(catchAllHandler);
-            done();
-        });
-    });
-
     describe('#registerEvents()', function() {
 
         afterEach(function () {
             decache('../src/burns');
         });
 
-        it('should allow for registering events at different places', function(done) {
+        it('allows for registering events at different places', function(done) {
             const burns = require('../src/burns');
             burns.registerEvents({ eventOne: [] });
             burns.registerEvents({ eventTwo: [] });
@@ -36,7 +20,7 @@ describe('Burns', function() {
             done();
         });
 
-        it('should allow for adding handlers for the same event at different places', function(done) {
+        it('allows for adding handlers for the same event at different places', function(done) {
             const handlerOne = () => {};
             const handlerTwo = () => {};
             const handlerThree = () => {};
@@ -73,7 +57,7 @@ describe('Burns', function() {
             decache('../src/burns');
         });
 
-        it('should call handlers for an event with the passed payload', function(done) {
+        it('calls handlers for an event with the passed payload', function(done) {
             const handler = sinon.spy();
 
             const burns = require('../src/burns');
@@ -88,7 +72,7 @@ describe('Burns', function() {
             }, 0);
         });
 
-        it('should call handlers for an event in the order they were defined', function(done) {
+        it('calls handlers for an event in the order they were defined', function(done) {
             const handlerOne = sinon.spy();
             const handlerTwo = sinon.spy();
             const handlerThree = sinon.spy();
@@ -105,7 +89,7 @@ describe('Burns', function() {
             }, 0);
         });
 
-        it('should not call remaining handlers for an event if one returns false', function(done) {
+        it('does NOT call remaining handlers for an event if one returns false', function(done) {
             const handlerOne = sinon.spy(() => false);
             const handlerTwo = sinon.spy();
             const handlerThree = sinon.spy();
@@ -122,7 +106,7 @@ describe('Burns', function() {
             }, 0);
         });
 
-        it('should call the default handler if event not registered', function(done) {
+        it('calls the default handler if event not registered', function(done) {
             const defaultHandler = sinon.spy();
 
             require('../src/burns').configure({
@@ -135,7 +119,7 @@ describe('Burns', function() {
             }, 0);
         });
 
-        it('should NOT call the default handler if event registered', function(done) {
+        it('does NOT call the default handler if event registered', function(done) {
             const defaultHandler = sinon.spy();
             const handlerOne = sinon.spy();
 

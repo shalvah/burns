@@ -4,7 +4,7 @@
   "description": "Manage application events without writing spaghetti code",
   "main": "lib/burns.js",
   "scripts": {
-    "test": "nyc mocha test/* && nyc report --reporter=html",
+    "test": "nyc mocha --recursive --prof test/ && nyc report --reporter=html",
     "prepublish": "babel src/burns.js -d lib"
   },
   "repository": {
