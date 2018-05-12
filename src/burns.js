@@ -2,8 +2,9 @@
 
 const config = require('./repositories/config');
 const events = require('./repositories/events');
+const broadcasters = require('./repositories/broadcasters');
 const eventDispatcher = require('./managers/dispatch')(config, events);
-const broadcastManager = require('./managers/broadcast')(config, events);
+const broadcastManager = require('./managers/broadcast')(config, events, broadcasters);
 
 class Burns {
 

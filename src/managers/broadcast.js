@@ -1,16 +1,18 @@
 'use strict';
 
-module.exports = makeEventsDispatcher;
+module.exports = makeBroadcastManager;
 
 /**
- * Returns an event dispatcher.
+ * Returns a broadcast manager
+ *
  * @param configRepository An object that provides a `get` method for getting config values with dot notation'`
  * @param eventsRepository
- * @returns {{queuedHandlers: {}, dispatch: (function(*=, *=)), queueHandlers: (function(*=, *=)), dequeueHandlers: (function(*))}}
+ * @param broadcastersRepository
+ * @returns {{broadcast: (function(*=, *=, *=))}}
  */
-function makeEventsDispatcher(configRepository, eventsRepository) {
+function makeBroadcastManager(configRepository, eventsRepository, broadcastersRepository) {
     return {
-        broadcast(event, payload, options) {
+        broadcast(event, payload, options = {}) {
             const broadcastChannel = eventsRepository.broadcastConfig(event).broadcastOn;
             if (!broadcastChannel) {
                 return;
@@ -22,8 +24,8 @@ function makeEventsDispatcher(configRepository, eventsRepository) {
             }
 
             const broadcastingConfig = configRepository.get(broadcastDriver);
-            let broadcaster = require(`../broadcasters/${broadcastDriver}`)(broadcastingConfig);
+            let broadcaster = broadcastersRepository.get(broadcastDriver, broadcastingConfig);
             broadcaster.broadcast(broadcastChannel, event, payload, options);
         }
     }
-};
+}
