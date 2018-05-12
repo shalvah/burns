@@ -9,13 +9,13 @@ describe('Burns', function() {
     describe('#dispatch()', function() {
 
         afterEach(function () {
-            decache('../src/burns');
+            decache('../../src/burns');
         });
 
         it('calls handlers for an event with the passed payload', function(done) {
             const handler = sinon.spy();
 
-            const burns = require('../src/burns');
+            const burns = require('../../src/burns');
             burns.registerEvents({ eventW: handler });
             const eventPayload = { key: 'value' };
             burns.dispatch('eventW', eventPayload);
@@ -32,7 +32,7 @@ describe('Burns', function() {
             const handlerTwo = sinon.spy();
             const handlerThree = sinon.spy();
 
-            require('../src/burns').registerEvents({
+            require('../../src/burns').registerEvents({
                 eventX: [handlerOne, handlerTwo, handlerThree]
             }).dispatch('eventX');
 
@@ -49,7 +49,7 @@ describe('Burns', function() {
             const handlerTwo = sinon.spy();
             const handlerThree = sinon.spy();
 
-            require('../src/burns').registerEvents({
+            require('../../src/burns').registerEvents({
                 eventY: [handlerOne, handlerTwo, handlerThree]
             }).dispatch('eventY');
 
@@ -64,7 +64,7 @@ describe('Burns', function() {
         it('calls the default handler if event not registered', function(done) {
             const defaultHandler = sinon.spy();
 
-            require('../src/burns').configure({
+            require('../../src/burns').configure({
                 defaultHandler
             }).dispatch('im_unregistered');
 
@@ -78,7 +78,7 @@ describe('Burns', function() {
             const defaultHandler = sinon.spy();
             const handlerOne = sinon.spy();
 
-            const burns = require('../src/burns');
+            const burns = require('../../src/burns');
             burns.configure({
                 defaultHandler
             }).registerEvents({

@@ -16,11 +16,11 @@ describe('Log broadcaster', function() {
 
         afterEach(function () {
             console.log.restore();
-            decache('../../src/broadcasters/log');
+            decache('../../../src/broadcasters/log');
         });
 
         it('logs event name, channel and payload to console', function(done) {
-            const logBroadcaster = require('../../src/broadcasters/log')({});
+            const logBroadcaster = require('../../../src/broadcasters/log')({});
             logBroadcaster.broadcast('theChannel', 'theEvent', { the: 'payload' });
 
             expect(logger.calledOnce).to.equal(true);

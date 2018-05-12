@@ -8,11 +8,11 @@ describe('Events repository', function () {
     describe('#add()', function () {
 
         afterEach(function () {
-            decache('../../src/repositories/events');
+            decache('../../../src/repositories/events');
         });
 
         it('allows for registering events at different places', function (done) {
-            const eventsRepository = require('../../src/repositories/events');
+            const eventsRepository = require('../../../src/repositories/events');
             eventsRepository.add({eventOne: []});
             eventsRepository.add({eventTwo: []});
             expect(eventsRepository.events).to.be.an('object').that.has.all.keys(['eventOne', 'eventTwo']);
@@ -29,7 +29,7 @@ describe('Events repository', function () {
             const handlerFour = () => {
             };
 
-            const eventsRepository = require('../../src/repositories/events');
+            const eventsRepository = require('../../../src/repositories/events');
             eventsRepository.add({
                 eventA: [handlerOne, handlerTwo],
                 eventB: handlerOne
@@ -57,11 +57,11 @@ describe('Events repository', function () {
     describe('#handlers()', function () {
 
         afterEach(function () {
-            decache('../../src/repositories/events');
+            decache('../../../src/repositories/events');
         });
 
         it('returns an empty array when event not registered or no handlers registered for event', function (done) {
-            const eventsRepository = require('../../src/repositories/events');
+            const eventsRepository = require('../../../src/repositories/events');
             expect(eventsRepository.handlers('apocalypse'))
                 .to.be.an('array').that.has.length(0);
 
@@ -79,7 +79,7 @@ describe('Events repository', function () {
             const handlerThree = () => {
             };
 
-            const eventsRepository = require('../../src/repositories/events');
+            const eventsRepository = require('../../../src/repositories/events');
             eventsRepository.add({
                 myWedding: [handlerOne, handlerTwo],
             });
@@ -105,11 +105,11 @@ describe('Events repository', function () {
     describe('#broadcastConfig()', function () {
 
         afterEach(function () {
-            decache('../../src/repositories/events');
+            decache('../../../src/repositories/events');
         });
 
         it('falls back to default options when event not registered or no broadcast options set for event', function (done) {
-            const eventsRepository = require('../../src/repositories/events');
+            const eventsRepository = require('../../../src/repositories/events');
             expect(eventsRepository.broadcastConfig('apocalypse'))
                 .to.deep.include({ broadcastOn: null, broadcastWhen: null});
 
@@ -125,7 +125,7 @@ describe('Events repository', function () {
         });
 
         it('returns broadcast options for an event', function (done) {
-            const eventsRepository = require('../../src/repositories/events');
+            const eventsRepository = require('../../../src/repositories/events');
             const dummy = () => {};
             eventsRepository.add({ apocalypse: { broadcastOn: '2012', broadcastWhen: dummy }});
 
