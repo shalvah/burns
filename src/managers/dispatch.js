@@ -4,11 +4,11 @@ module.exports = makeEventsDispatcher;
 
 /**
  * Returns an event dispatcher.
- * @param configManager An object that provides a `get` method to get the 'defaultHandler'`
- * @param eventsManager An object that provides a `handlers` method to retrieve all handlrs registered for an event
+ * @param configRepository An object that provides a `get` method to get the 'defaultHandler'`
+ * @param eventsRepository An object that provides a `handlers` method to retrieve all handlrs registered for an event
  * @returns {{queuedHandlers: {}, dispatch: (function(*=, *=)), queueHandlers: (function(*=, *=)), dequeueHandlers: (function(*))}}
  */
-function makeEventsDispatcher(configManager, eventsManager) {
+function makeEventsDispatcher(configRepository, eventsRepository) {
     return {
         queuedHandlers: {},
 
@@ -17,11 +17,11 @@ function makeEventsDispatcher(configManager, eventsManager) {
         },
 
         queueHandlers(eventName, eventData) {
-            let handlers = eventsManager.handlers(eventName);
+            let handlers = eventsRepository.handlers(eventName);
 
             if (handlers.length <= 0) {
-                if (!configManager.get('defaultHandler')) return;
-                handlers = [configManager.get('defaultHandler')];
+                if (!configRepository.get('defaultHandler')) return;
+                handlers = [configRepository.get('defaultHandler')];
             }
 
             this.queuedHandlers[eventName] = [];
@@ -44,4 +44,4 @@ function makeEventsDispatcher(configManager, eventsManager) {
             }
         },
     }
-};
+}

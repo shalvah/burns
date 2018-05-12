@@ -4,16 +4,24 @@ module.exports = {
 
     events: {},
 
-    handlers (event) {
+    handlers(event) {
         let eventConfig = this.events[event];
         if (eventConfig && Array.isArray(eventConfig.handlers)) {
             return eventConfig.handlers;
         }
-
         return [];
     },
 
-    addEvents(events) {
+    broadcastConfig(event) {
+        let defaultConfig = { broadcastOn: null, broadcastWhen: null};
+        let eventConfig = this.events[event];
+        if (eventConfig) {
+            return Object.assign({}, defaultConfig, eventConfig);
+        }
+        return defaultConfig;
+    },
+
+    add(events) {
         Object.entries(events).forEach(([eventName, eventConfig]) => {
             if (Array.isArray(eventConfig)) {
                 // we're dealing with a list of handlers
