@@ -1,11 +1,11 @@
 'use strict';
 
 const config = require('./managers/config');
+const eventsManager = require('./managers/events');
 
 class Burns {
 
     constructor() {
-        this.events = {};
         this.queuedHandlers = {};
     }
 
@@ -15,30 +15,8 @@ class Burns {
     }
 
     registerEvents(events) {
-        Object.entries(events).forEach(([eventName, eventConfig]) => {
-            if (Array.isArray(eventConfig)) {
-                // we're dealing with a list of handlers
-                this.addEventHandlers(eventName, ...eventConfig);
-            } else if (typeof eventConfig === 'function') {
-                //a single event handler
-                this.addEventHandlers(eventName, eventConfig);
-            } else {
-                // configuration options for the event
-                this.updateEventConfig(eventName, eventConfig);
-            }
-        });
+        eventsManager.addEvents(events);
         return this;
-    }
-
-    addEventHandlers(eventName, ...handlers) {
-        if (this.events[eventName] && this.events[eventName].handlers) {
-            handlers = [...this.events[eventName].handlers, ...handlers];
-        }
-        this.updateEventConfig(eventName, { handlers });
-    }
-
-    updateEventConfig(eventName, config) {
-        this.events[eventName] = config;
     }
 
     dispatch(eventName, eventData = {}) {
@@ -46,12 +24,9 @@ class Burns {
     }
 
     queueHandlers(eventName, eventData) {
-        let eventConfig = this.events[eventName];
+        let handlers = eventsManager.handlers(eventName);
 
-        let handlers;
-        if (eventConfig && eventConfig.handlers && eventConfig.handlers.length > 0) {
-            handlers = eventConfig.handlers;
-        } else {
+        if (handlers.length <= 0) {
             if (!config.get('defaultHandler')) return;
             handlers = [config.get('defaultHandler')];
         }

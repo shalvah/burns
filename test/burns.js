@@ -6,51 +6,6 @@ const decache = require('decache');
 
 describe('Burns', function() {
 
-    describe('#registerEvents()', function() {
-
-        afterEach(function () {
-            decache('../src/burns');
-        });
-
-        it('allows for registering events at different places', function(done) {
-            const burns = require('../src/burns');
-            burns.registerEvents({ eventOne: [] });
-            burns.registerEvents({ eventTwo: [] });
-            expect(burns.events).to.be.an('object').that.has.all.keys(['eventOne', 'eventTwo']);
-            done();
-        });
-
-        it('allows for adding handlers for the same event at different places', function(done) {
-            const handlerOne = () => {};
-            const handlerTwo = () => {};
-            const handlerThree = () => {};
-            const handlerFour = () => {};
-
-            const burns = require('../src/burns');
-            burns.registerEvents({
-                eventA: [handlerOne, handlerTwo],
-                eventB: handlerOne
-            });
-            burns.registerEvents({
-                eventA: [handlerThree],
-                eventB: handlerTwo
-            });
-            burns.registerEvents({
-                eventA: handlerFour,
-                eventB: [handlerThree, handlerFour]
-            });
-
-            expect(burns.events).to.be.an('object').that.has.all.keys('eventA', 'eventB');
-            expect(burns.events.eventA.handlers)
-                .to.be.an('array')
-                .that.has.members([handlerOne, handlerTwo, handlerThree, handlerFour]);
-            expect(burns.events.eventB.handlers)
-                .to.be.an('array')
-                .that.has.members([handlerOne, handlerTwo, handlerThree, handlerFour]);
-            done();
-        });
-    });
-
     describe('#dispatch()', function() {
 
         afterEach(function () {
