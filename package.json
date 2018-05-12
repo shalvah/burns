@@ -2,10 +2,10 @@
   "name": "burns",
   "version": "1.0.11",
   "description": "Manage application events without writing spaghetti code",
-  "main": "lib/burns.js",
+  "main": "lib/src/burns.js",
   "scripts": {
     "test": "nyc mocha --recursive --prof test/ && nyc report --reporter=html",
-    "prepublish": "babel src/burns.js -d lib"
+    "prepublish": "babel src/ -d lib"
   },
   "repository": {
     "type": "git",
