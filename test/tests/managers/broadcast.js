@@ -75,5 +75,28 @@ describe('Broadcast manager', function() {
             expect(mockPusherBroadcaster.broadcast.calledOnce).to.equal(true);
             done();
         });
+
+        it('supports broadcastOn as a function', function(done) {
+            let mockConfig = makeMockConfig({ broadcaster: 'log' });
+            const mockEvents = makeMockEvents({
+                broadcastOn: payload => payload.key + '-theChannel'
+            });
+
+            let mockLogBroadcaster = {
+                broadcast() {
+                }
+            };
+            sinon.spy(mockLogBroadcaster, 'broadcast');
+            const mockBroadcasters = makeMockBroadcasters({
+                log: mockLogBroadcaster
+            });
+
+            let broadcastManager = require('../../../src/managers/broadcast')(mockConfig, mockEvents, mockBroadcasters);
+            broadcastManager.broadcast('theEvent', { key: 'value' });
+            expect(mockLogBroadcaster.broadcast.calledOnce).to.equal(true);
+            expect(mockLogBroadcaster.broadcast.getCall(0).args[0]).to.equal('value-theChannel');
+            mockLogBroadcaster.broadcast.resetHistory();
+            done();
+        });
     });
 });

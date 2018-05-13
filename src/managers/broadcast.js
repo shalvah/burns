@@ -13,7 +13,7 @@ module.exports = makeBroadcastManager;
 function makeBroadcastManager(configRepository, eventsRepository, broadcastersRepository) {
     return {
         broadcast(event, payload, options = {}) {
-            const broadcastChannel = eventsRepository.broadcastConfig(event).broadcastOn;
+            let broadcastChannel = eventsRepository.broadcastConfig(event).broadcastOn;
             if (!broadcastChannel) {
                 return;
             }
@@ -25,6 +25,9 @@ function makeBroadcastManager(configRepository, eventsRepository, broadcastersRe
 
             const broadcastingConfig = configRepository.get(broadcastDriver);
             let broadcaster = broadcastersRepository.get(broadcastDriver, broadcastingConfig);
+            if (typeof broadcastChannel === 'function') {
+                broadcastChannel = broadcastChannel(payload);
+            }
             broadcaster.broadcast(broadcastChannel, event, payload, options);
         }
     }

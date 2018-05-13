@@ -32,6 +32,20 @@ describe('Burns', function() {
             }, 0);
         });
 
+        it('passes an empty payload to the handler if none sent at dispatch', function(done) {
+            const handler = sinon.spy();
+
+            const burns = require('../../src/burns');
+            burns.registerEvents({ eventZ: handler });
+            burns.dispatch('eventZ');
+
+            setTimeout(() => {
+                expect(handler.calledOnce).to.equal(true);
+                expect(handler.getCall(0).args[0]).to.deep.equal({});
+                done();
+            }, 0);
+        });
+
         it('calls handlers for an event in the order they were defined', function(done) {
             const handlerOne = sinon.spy();
             const handlerTwo = sinon.spy();
