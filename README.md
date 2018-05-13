@@ -8,7 +8,7 @@
 [![npm version](https://badge.fury.io/js/burns.svg)](https://badge.fury.io/js/burns)
 [![Build Status](https://travis-ci.org/shalvah/burns.svg?branch=master)](https://travis-ci.org/shalvah/burns)
 
-Burns is a lightweight (no dependencies!) Node.js module for managing application events. Define your events and handlers in one place and dispatch them when you need to.
+Burns is a lightweight (no dependencies!) Node.js module for managing application events elegantly. Define your events and handlers in one place and dispatch them when you need to.
 
 Inspired by Laravel's [events](https://laravel.com/docs/master/events) and [broadcasting](https://laravel.com/docs/master/broadcasting) systems.
 
