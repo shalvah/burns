@@ -8,164 +8,227 @@
 [![npm version](https://badge.fury.io/js/burns.svg)](https://badge.fury.io/js/burns)
 [![Build Status](https://travis-ci.org/shalvah/burns.svg?branch=master)](https://travis-ci.org/shalvah/burns)
 
-Burns is a zero-dependency Node.js module that lets you manage application events in a clean and consistent manner. Define your events in one place, define listeners to handle them, and fire them when you need to.
+Burns is a lightweight (no dependencies!) Node.js module for managing application events. Define your events and handlers in one place and dispatch them when you need to.
 
-## Usage
-```
+Inspired by Laravel's [events](https://laravel.com/docs/master/events) and [broadcasting](https://laravel.com/docs/master/broadcasting) systems.
+
+## Features
+- Easy visibility of all application events
+- Default handler to catch generic events
+- Attaching event handlers at multiple places
+- Asynchronous handling of events
+- Automatic event broadcasting
+
+## How to use
+```bash
 npm install --save burns
 ```
 
 ```js
-let burns = require('burns');
+const burns = require('burns');
 ```
 
-### Registering Events
-To register your events, call ` register` with an object with event names as keys and one or more event listeners as values:
+Define an event handler:
 
 ```js
-burns.register({
-    userFollowed: NotifyUser,
-    userSignUp: [
-      SendEmail,
-      CongratulateReferrer
-    ]
-});
-```
+// handlers/order.js
 
-Burns also allows you to register events at multiple locations, so, for a large application, you can have each application component define its own events and listeners.
-
-```js
-// app/users/service.js
-burns.register({
-    userFollowed: NotifyUser,
-    userSignUp: [
-      SendEmail,
-      CongratulateReferrer
-    ]
-});
-
-// app/posts/service.js
-burns.register({
-    postLiked: NotifyAuthor,
-});
-```
-
-### Defining Listeners and Handlers
-**Listeners** are ES6 classes or constructor functions (called with `new`) with one or more handlers
-
-```js
-class CongratulateReferrer {
-    handle(data) {
-        let email = makeEmail(`Congrats! ${data.username} signed up on your recommendation!`);
-        sendEmailTo(data.referrer, email);
-    }
-}
-
-function CongratulateReferrer () {
-  this.handle = function (data) {
-    var email = makeEmail('Congrats!' + data.username + ' signed up on your recommendation!');
-    sendEmailTo(data.referrer, email);
-  }
+function sendOrderShippedEmail(data)
+{
+    mailer.sendEmail(`Hi ${data.userName}, Your order ${data.orderId} has been shipped`);
 }
 ```
 
-**Handlers** are (non-static) methods in listener classes. Typically, Burns looks for the `handle` method in your listener and calls that. However, you can choose to define a handler for specific events, by using `on` + the UpperCased event name. In such a case, `handle` will NOT be called. For instance:
+Register the event and attach the handler:
+```js
+let orderHandlers = require('./handlers/order');
+burns.registerEvents({
+  orderShipped: orderHandlers.sendOrderShippedEmail
+});
+```
 
+Dispatch the event when you're ready! :rocket:
+```js
+burns.dispatch('orderShipped', {
+    orderId: order.id, 
+    userName: user.name
+});
+```
+
+### Registering events
+Register events by calling ` registerEvents` with a single object. The names of your events should be the keys of this object and their handlers the values:
 
 ```js
-class GenericListener {
-    onSpecialEvent(data) {}
-    handle(data) {}
-}
-
-burns.register({
-  specialEvent: GenericListener,
-  regularEvent: GenericListener
-})
-burns.event('specialEvent'); // will call onSpecialEvent
-burns.event('regularEvent'); // will call handle
-````
-
-### Stopping Propagation
-Burns calls your event listeners in the specified order. This means that, in the code snippet below, dispatching the `userSignUp` event will call the handler in `SendWelcomeEmail` first, followed by the handler in `CongratulateReferrer`: 
+burns.registerEvents({
+  newPurchase: sendReceipt,
+  orderShipped: notifyUser
+});
+```
+You can also attach multiple handlers to a single event:
 
 ```js
-burns.register({
-  userSignUp: [SendWelcomeEmail, CongratulateReferrer]
+burns.registerEvents({
+  userSignUp: [
+    userListener.sendEmail,
+    userListener.congratulateReferrer
+  ]
 })
 ```
+Burns allows you to register events at multiple locations. This means that for a large application, you can have each application component define its own events and handlers by calling `registerEvents` wherever it needs to.
 
-If you want to stop the next handlers for the event from being called, simply return `false` from the current handler:
+### Defining handlers
+A handler is a function that responds to an event. A handler takes a single parameter, the event payload which you pass when dispatching the event:
 
 ```js
-class SendWelcomeEmail {
-    handle(data) {
-        emailUser(data.email);
+function sendReceipt(data)
+{
+    let receipt = createReceipt(data.order, data.user);
+    mailer.sendEmail('Here is your order receipt', receipt);
+}
+
+burns.registerEvents({
+  newPurchase: sendReceipt,
+});
+
+// this will call sendReceipt with data = {}
+burns.dispatch('newPurchase');
+
+// this will call sendReceipt with data containing order and user
+burns.dispatch('newPurchase', {
+    order: getOrder(), 
+    user: findUser() 
+});
+```
+
+
+#### Stopping Propagation
+If you have multiple handlers for a single event, Burns will call them in the order in which they were registered. This means that, in the code snippet below, dispatching the `userSignUp` event will call `sendWelcomeEmail` first, followed by `congratulateReferrer`: 
+
+```js
+burns.registerEvents({
+  userSignUp: [
+      sendWelcomeEmail, 
+      congratulateReferrer
+   ]
+})
+```
+
+If you want to stop the next handlers for the event from being called, return `false` from the current handler:
+
+```js
+function sendWelcomeEmail(data) {
+        sendEmail('Welcome to myAwesomeApp', data.emailAddress);
         if (data.referrer === null) {
             return false;
         }
-    }
 }
 
-class CongratulateReferrer {
-    handle(data) {} // won't be called if there is no referrer
-}
+// won't be called if data.referrer is empty
+function congratulateReferrer(data) {}
+```
 
+#### Using a default handler
+You may specify a `defaultHandler`. Burns will pass a dispatched event to this handler if no handlers are registered for it:
+
+```js
+function handleEverything (data) {}
+
+burns.configure({
+    defaultHandler: handleEverything
+});
+
+// this will call handleEverything
+burns.dispatch('unregisteredEvent', somePayload);
 ```
 
 ### Dispatching events
-To dispatch an event, simply call ` event` with the name of the event:
+To dispatch an event, call ` dispatch` with the name of the event:
 
 ```js
-burns.event('postLiked');
+burns.dispatch('postLiked');
 ```
 
 You may also pass in a payload containing data to be transmitted with the event:
 
 ```js
-burns.event('userSignUp', {
-    username: 'ayCarumba',
-    email: 'chunkylover53@aol.com',
-    referrer: 'burns@cmburns.evil',
+burns.dispatch('postLiked', {
+    postId: 69,
+    likedBy: 42
 });
 ```
-This object will be passed as an argument to the handler method.
+This object will be passed as an argument to the handler.
 
-### Using a Default Listener
-You may also specify a `defaultListener`. Burns will call this listener's handler (`on{EventName}` if it exists, otherwise `handle`) only if you have not registered any listener for that event. For instance, in the code snippet below:
- - `handle` method in `CatchAll` will be called for `unregisteredEvent`
-  - `onAnotherUnregisteredEvent` method in `CatchAll` will be called for `anotherUnregisteredEvent`
- - `handle` method in `Listener` will be called for `registeredEvent`
+## Broadcasting events
+Supposing you have an `orderStatusUpdated` event that is fired when the status of an order is updated, and you wish to update the order status on your frontend in realtime. Burns supports this via event broadcasting. 
+
+You'll need to specify a `broadcaster`. For now, broadcasting is only supported to the console log (broadcaster: 'log') and [Pusher](http://pusher.com). The default broadcaster is `log`, which will log all broadcasts to the Node console.
+
+If you're using the 'pusher' broadcaster, pass in your credentials in a `pusher` object:
 
 ```js
-class CatchAll {
-    handle() {}
-    onAnotherUnregisteredEvent() {}
-}
-
-class Listener {
-    handle() {}
-}
-
 burns.configure({
-    defaultListener: CatchAll
-}).register({
-  registeredEvent: Listener
-});
+  broadcaster: 'pusher',
+  pusher: {
+    appId: 'APP_ID',
+    key: 'APP_KEY',
+    secret: 'SECRET_KEY',
+    cluster: 'CLUSTER',
+  }
+})
+```
+You'll also need to run `npm install pusher` to pull in the Pusher Node SDK.
 
-burns.event('unregisteredEvent');
-burns.event('anotherUnregisteredEvent');
-burns.event('registeredEvent');
+Then register the `orderStatusUpdated` using the "advanced" configuration format:
+
+```js
+bruns.registerEvents({
+  orderStatusUpdated: {
+      handlers: [
+          notifyUser
+      ],
+      broadcastOn: 'orderStatusUpdates'
+  }
+})
 ```
 
-### Event Names
-By default, when looking for specific handlers, Burns will use `on` + the UpperCase form of your event name. Any non-alphanumeric characters will be removed. Thus, `'mrPlow'`, `'mr-plow'`, `'mr plow'`, `'MrPlow'`, and `'mr_plow'` will all be handled by the method `onMrPlow` if you have one defined (otherwise `handle`). However, it is recommended that you follow a fixed convention for naming your events.
+The `broadcastOn` key specifies the name of the channel on which the event will be broadcast. It can be a string or a function that takes in the event payload and returns a channel name.
+
+Now when you call
+
+```js
+burns.dispatch('orderStatusUpdated', order);
+```
+
+Burns will automatically publish a message on the channel *orderStatusUpdates* with your order data as the payload. All that's left iss for you to listen for this event on the frontend.
+
+If you'd like to exclude the client that triggered the event from receiving the broadcast, you can pass in an object as the third parameter to `dispatch()`. The 'exclude' key should contain the socket ID of the client to exclude:
+
+```js
+burns.dispatch('orderStatusUpdated', order, { exclude: socketId });
+```
 
 ## But Node already supports events natively!
-Yes, and that's a great thing for handling events at lower levels in your code base (for instance, on open of a file, on read of a stream). When dealing with events at a higher level (such as a new user signing up), Burns allows you to define all your app's events in one central location (the `register` function), and write robust handlers (which you should probably put in a `listeners` directory).
+Yes, and that's a great thing for handling events at lower levels in your code base (for instance, on `open` of a file, on `data` of a stream). When dealing with events at a higher level (such as a new user signing up), Burns is perfect for helping you keep your code clean and organized.
 
 ## Asynchronous vs. Synchronous
-[Unlike NodeJS' inbuilt events system](https://nodejs.org/api/events.html#events_asynchronous_vs_synchronous), Burns calls your event listeners asynchronously (still in the defined order, though). That is, the functions are queued behind whatever I/O event callbacks that are already in the event queue. This means that you can send a response to your user imediately, while your event gets handled in the background
+[Unlike NodeJS' inbuilt events system](https://nodejs.org/api/events.html#events_asynchronous_vs_synchronous), Burns calls your event handlers asynchronously in the order in which they were registered. This means that the functions are queued behind whatever I/O event callbacks that are already in the event queue, thus enabling you to send a response to your user immediately, while your event gets handled in the background
 
 ## Like it?
 Star and share, and give me a shout out [on Twitter](http://twitter.com/theshalvah)
+
+## Contributing
+- Clone the repo
+
+```bash
+git clone https://github.com/shalvah/burns.git
+```
+
+- Run tests
+
+```bash
+npm run test
+```
+
+## Todo
+- add support for `broadcastWhen` option
+- add a `subscribe` method that allows for a handler to subscribe to an event
