@@ -17,7 +17,7 @@ Inspired by Laravel's [events](https://laravel.com/docs/master/events) and [broa
 - Default handler to catch generic events
 - Attaching event handlers at multiple places
 - Asynchronous handling of events
-- Automatic event broadcasting
+- Inbuilt event broadcasting
 
 ## How to use
 ```bash
@@ -159,11 +159,11 @@ burns.dispatch('postLiked', {
 This object will be passed as an argument to the handler.
 
 ## Broadcasting events
-Supposing you have an `orderStatusUpdated` event that is fired when the status of an order is updated, and you wish to update the order status on your frontend in realtime. Burns supports this via event broadcasting. 
+Supposing you have an `orderStatusUpdated` event that is fired when the status of an order is updated, and you wish to update the order status on your frontend in realtime. Burns handles this for you via event broadcasting. 
 
-You'll need to specify a `broadcaster`. For now, broadcasting is only supported to the console log (broadcaster: 'log') and [Pusher](http://pusher.com). The default broadcaster is `log`, which will log all broadcasts to the Node console.
+You'll need to specify a `broadcaster`. For now, broadcasting is only supported to the console log (broadcaster: 'log') and [Pusher](http://pusher.com) (broadcaster: 'pusher'). The default broadcaster is `log`, which will log all broadcasts to the Node console. (You can disable broadcasting by setting `broadcaster: null`.)
 
-If you're using the 'pusher' broadcaster, pass in your credentials in a `pusher` object:
+If you're broadcasting with Pusher, pass in your credentials as a `pusher` object:
 
 ```js
 burns.configure({
@@ -217,13 +217,24 @@ Yes, and that's a great thing for handling events at lower levels in your code b
 Star and share, and give me a shout out [on Twitter](http://twitter.com/theshalvah)
 
 ## Contributing
+If you have an bugfix, idea or feature you'd like to implement, you're welcome to send in a PR!
+
+(Requires Node v8 or above)
 - Clone the repo
 
 ```bash
 git clone https://github.com/shalvah/burns.git
 ```
 
-- Run tests
+- Create a branch for your fix/feature:
+
+```bash
+git checkout -b my-patch
+```
+
+- Write your code. Add tests too, if you know how. If you're not sure how, just send in the PR anyway.
+
+- Make sure all tests are passing
 
 ```bash
 npm run test
