@@ -181,7 +181,7 @@ You'll also need to run `npm install pusher` to pull in the Pusher Node SDK.
 Then register the `orderStatusUpdated` using the "advanced" configuration format:
 
 ```js
-bruns.registerEvents({
+burns.registerEvents({
   orderStatusUpdated: {
       handlers: [
           notifyUser
