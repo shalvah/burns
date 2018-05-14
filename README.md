@@ -12,7 +12,7 @@ Burns is a lightweight (no dependencies!) Node.js module for managing applicatio
 
 Inspired by Laravel's [events](https://laravel.com/docs/master/events) and [broadcasting](https://laravel.com/docs/master/broadcasting) systems.
 
-## Features
+## What you get
 - Easy visibility of all application events
 - Default handler to catch generic events
 - Attaching event handlers at multiple places
