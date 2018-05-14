@@ -101,30 +101,30 @@ burns.dispatch('newPurchase', {
 ```
 
 
-#### Stopping Propagation
-If you have multiple handlers for a single event, Burns will call them in the order in which they were registered. This means that, in the code snippet below, dispatching the `userSignUp` event will call `sendWelcomeEmail` first, followed by `congratulateReferrer`: 
+#### Stopping event propagation
+Suppose you're running a Netflix-like service where you bill users every month. Your app can fire a `newBillingPeriod` event and perform multiple actions when this event is fired: charge the customer's card, credit their wallet, send them a receipt. Burns allows you to register multiple handlers for the event, and will call them in the order in which they were registered: 
 
 ```js
 burns.registerEvents({
-  userSignUp: [
-      sendWelcomeEmail, 
-      congratulateReferrer
+  newBillingPeriod: [
+      chargeCustomerCard, 
+      creditCustomerWallet,
+      sendCustomerReceipt
    ]
 })
 ```
 
-If you want to stop the next handlers for the event from being called, return `false` from the current handler:
+If the process of charging the customer's card fails, you probably wouldn't want to go through with the other actions. In such a situation, you can prevent the subsequent handlers from being called by returning `false` from the current handler:
 
 ```js
-function sendWelcomeEmail(data) {
-        sendEmail('Welcome to myAwesomeApp', data.emailAddress);
-        if (data.referrer === null) {
-            return false;
-        }
+function chargeCustomerCard(customer) {
+  if (!PaymentProcessor.chargeCard(customer)) {
+      // bonus: dispatch a 'chargeCardFaied` event. Cool, huh?
+    burns.dispatch('chargeCardFailed', customer);
+    return false;
+  }
+  
 }
-
-// won't be called if data.referrer is empty
-function congratulateReferrer(data) {}
 ```
 
 #### Using a default handler
@@ -243,3 +243,4 @@ npm run test
 ## Todo
 - add support for `broadcastWhen` option
 - add a `subscribe` method that allows for a handler to subscribe to an event
+- add support for Promises in event handlers
