@@ -13,7 +13,10 @@
   },
   "keywords": [
     "events",
-    "listeners"
+    "listeners",
+    "handlers",
+    "broadcasting",
+    "event-driven"
   ],
   "author": "Shalvah Adebayo <shalvah.adebayo@gmail.com>",
   "license": "MIT",
