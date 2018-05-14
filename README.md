@@ -102,13 +102,13 @@ burns.dispatch('newPurchase', {
 
 
 #### Stopping event propagation
-Suppose you're running a Netflix-like service where you bill users every month. Your app can fire a `newBillingPeriod` event and perform multiple actions when this event is fired: charge the customer's card, credit their wallet, send them a receipt. Burns allows you to register multiple handlers for the event, and will call them in the order in which they were registered: 
+Suppose you're running a subscription service (like Netflix) where you bill users every month. Your app can fire a `newBillingPeriod` event and perform multiple actions when this event is fired: charge the customer's card, extend their subscription, send them a receipt. Burns allows you to register multiple handlers for the event, and will call them in the order in which they were registered: 
 
 ```js
 burns.registerEvents({
   newBillingPeriod: [
       chargeCustomerCard, 
-      creditCustomerWallet,
+      extendCustomerSubscription,
       sendCustomerReceipt
    ]
 })
