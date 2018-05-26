@@ -1,6 +1,6 @@
 {
   "name": "burns",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Manage application events without writing spaghetti code",
   "main": "lib/burns.js",
   "scripts": {
