@@ -199,7 +199,7 @@ Now when you call
 burns.dispatch('orderStatusUpdated', order);
 ```
 
-Burns will automatically publish a message on the channel *orderStatusUpdates* with your order data as the payload. All that's left iss for you to listen for this event on the frontend.
+Burns will automatically publish a message on the channel *orderStatusUpdates* with your order data as the payload. All that's left is for you to listen for this event on the frontend.
 
 If you'd like to exclude the client that triggered the event from receiving the broadcast, you can pass in an object as the third parameter to `dispatch()`. The 'exclude' key should contain the socket ID of the client to exclude:
 
