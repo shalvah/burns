@@ -120,7 +120,7 @@ If the process of charging the customer's card fails, you probably wouldn't want
 ```js
 function chargeCustomerCard(customer) {
   if (!PaymentProcessor.chargeCard(customer)) {
-      // bonus: dispatch a 'chargeCardFaied` event. Cool, huh?
+      // bonus: dispatch a 'chargeCardFailed` event. Cool, huh?
     burns.dispatch('chargeCardFailed', customer);
     return false;
   }
