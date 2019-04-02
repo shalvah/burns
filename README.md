@@ -22,7 +22,7 @@ Inspired by Laravel's [events](https://laravel.com/docs/master/events) and [broa
 
 ## Installation
 ```bash
-npm install --save burns
+npm install burns
 ```
 
 You can OPTIONALLY install type definitions to get better intellisense and autocompletion.
