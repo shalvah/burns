@@ -20,10 +20,17 @@ Inspired by Laravel's [events](https://laravel.com/docs/master/events) and [broa
 - Asynchronous handling of events
 - Inbuilt event broadcasting
 
-## How to use
+## Installation
 ```bash
 npm install --save burns
 ```
+
+You can OPTIONALLY install type definitions to get better intellisense and autocompletion.
+```bash
+npm install --save-dev @types/burns
+```
+
+## How to use
 
 ```js
 const burns = require('burns');
@@ -51,7 +58,7 @@ burns.registerEvents({
 Dispatch the event when you're ready! :rocket:
 ```js
 burns.dispatch('orderShipped', {
-    orderId: order.id, 
+    orderId: order.id,
     userName: user.name
 });
 ```
@@ -96,19 +103,19 @@ burns.dispatch('newPurchase');
 
 // this will call sendReceipt with data containing order and user
 burns.dispatch('newPurchase', {
-    order: getOrder(), 
-    user: findUser() 
+    order: getOrder(),
+    user: findUser()
 });
 ```
 
 
 #### Stopping event propagation
-Suppose you're running a subscription service (like Netflix) where you bill users every month. Your app can fire a `newBillingPeriod` event and perform multiple actions when this event is fired: charge the customer's card, extend their subscription, send them a receipt. Burns allows you to register multiple handlers for the event, and will call them in the order in which they were registered: 
+Suppose you're running a subscription service (like Netflix) where you bill users every month. Your app can fire a `newBillingPeriod` event and perform multiple actions when this event is fired: charge the customer's card, extend their subscription, send them a receipt. Burns allows you to register multiple handlers for the event, and will call them in the order in which they were registered:
 
 ```js
 burns.registerEvents({
   newBillingPeriod: [
-      chargeCustomerCard, 
+      chargeCustomerCard,
       extendCustomerSubscription,
       sendCustomerReceipt
    ]
@@ -124,7 +131,7 @@ function chargeCustomerCard(customer) {
     burns.dispatch('chargeCardFailed', customer);
     return false;
   }
-  
+
 }
 ```
 
@@ -160,7 +167,7 @@ burns.dispatch('postLiked', {
 This object will be passed as an argument to the handler.
 
 ## Broadcasting events
-Supposing you have an `orderStatusUpdated` event that is fired when the status of an order is updated, and you wish to update the order status on your frontend in realtime. Burns handles this for you via event broadcasting. 
+Supposing you have an `orderStatusUpdated` event that is fired when the status of an order is updated, and you wish to update the order status on your frontend in realtime. Burns handles this for you via event broadcasting.
 
 You'll need to specify a `broadcaster`. For now, broadcasting is only supported to the console log (broadcaster: 'log') and [Pusher](http://pusher.com) (broadcaster: 'pusher'). The default broadcaster is `log`, which will log all broadcasts to the Node console. (You can disable broadcasting by setting `broadcaster: null`.)
 
