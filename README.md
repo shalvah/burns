@@ -25,7 +25,7 @@ Inspired by Laravel's [events](https://laravel.com/docs/master/events) and [broa
 npm install burns
 ```
 
-You can OPTIONALLY install type definitions to get better intellisense and autocompletion.
+You can optionally install type definitions to get better intellisense and autocompletion.
 ```bash
 npm install --save-dev @types/burns
 ```
@@ -49,13 +49,13 @@ function sendOrderShippedEmail(data)
 
 Register the event and attach the handler:
 ```js
-let orderHandlers = require('./handlers/order');
+let { sendOrderShippedEmail } = require('./handlers/order');
 burns.registerEvents({
-  orderShipped: orderHandlers.sendOrderShippedEmail
+  orderShipped: sendOrderShippedEmail
 });
 ```
 
-Dispatch the event when you're ready! :rocket:
+Dispatch the event when you're ready! 🚀
 ```js
 burns.dispatch('orderShipped', {
     orderId: order.id,
@@ -68,7 +68,7 @@ Register events by calling ` registerEvents` with a single object. The names of 
 
 ```js
 burns.registerEvents({
-  newPurchase: sendReceipt,
+  newPurchase: sendInvoice,
   orderShipped: notifyUser
 });
 ```
@@ -88,20 +88,20 @@ Burns allows you to register events at multiple locations. This means that for a
 A handler is a function that responds to an event. A handler takes a single parameter, the event payload which you pass when dispatching the event:
 
 ```js
-function sendReceipt(data)
+function sendInvoice(data)
 {
-    let receipt = createReceipt(data.order, data.user);
-    mailer.sendEmail('Here is your order receipt', receipt);
+    let invoice = createInvoice(data.order, data.user);
+    mailer.sendEmail('Here is your order invoice', invoice);
 }
 
 burns.registerEvents({
-  newPurchase: sendReceipt,
+  newPurchase: sendInvoice,
 });
 
-// this will call sendReceipt with data = {}
+// this will call sendInvoice with data = {}
 burns.dispatch('newPurchase');
 
-// this will call sendReceipt with data containing order and user
+// this will call sendInvoice with data containing order and user
 burns.dispatch('newPurchase', {
     order: getOrder(),
     user: findUser()
@@ -110,14 +110,14 @@ burns.dispatch('newPurchase', {
 
 
 #### Stopping event propagation
-Suppose you're running a subscription service (like Netflix) where you bill users every month. Your app can fire a `newBillingPeriod` event and perform multiple actions when this event is fired: charge the customer's card, extend their subscription, send them a receipt. Burns allows you to register multiple handlers for the event, and will call them in the order in which they were registered:
+Suppose you're running a subscription service (like Netflix) where you bill users every month. Your app can fire a `newBillingPeriod` event and perform multiple actions when this event is fired: charge the customer's card, extend their subscription, send them a invoice. Burns allows you to register multiple handlers for the event, and will call them in the order in which they were registered:
 
 ```js
 burns.registerEvents({
   newBillingPeriod: [
       chargeCustomerCard,
       extendCustomerSubscription,
-      sendCustomerReceipt
+      sendCustomerInvoice,
    ]
 })
 ```
@@ -161,7 +161,7 @@ You may also pass in a payload containing data to be transmitted with the event:
 ```js
 burns.dispatch('postLiked', {
     postId: 69,
-    likedBy: 42
+    likedBy: 42,
 });
 ```
 This object will be passed as an argument to the handler.
@@ -207,7 +207,7 @@ Now when you call
 burns.dispatch('orderStatusUpdated', order);
 ```
 
-Burns will automatically publish a message on the channel *orderStatusUpdates* with your order data as the payload. All that's left is for you to listen for this event on the frontend.
+Burns will automatically publish a message on the channel `orderStatusUpdates` with the `order` object as the payload. All that's left is for you to listen for this event on the frontend.
 
 If you'd like to exclude the client that triggered the event from receiving the broadcast, you can pass in an object as the third parameter to `dispatch()`. The 'exclude' key should contain the socket ID of the client to exclude:
 
@@ -219,7 +219,9 @@ burns.dispatch('orderStatusUpdated', order, { exclude: socketId });
 Yes, and that's a great thing for handling events at lower levels in your code base (for instance, on `open` of a file, on `data` of a stream). When dealing with events at a higher level (such as a new user signing up), Burns is perfect for helping you keep your code clean and organized.
 
 ## Asynchronous vs. Synchronous
-[Unlike NodeJS' inbuilt events system](https://nodejs.org/api/events.html#events_asynchronous_vs_synchronous), Burns calls your event handlers asynchronously in the order in which they were registered. This means that the functions are queued behind whatever I/O event callbacks that are already in the event queue, thus enabling you to send a response to your user immediately, while your event gets handled in the background
+Unlike [Node.js' inbuilt events system](https://nodejs.org/api/events.html#events_asynchronous_vs_synchronous), Burns calls your event handlers asynchronously in the order in which they were registered. This means that the functions are queued behind whatever I/O event callbacks that are already in the event queue, thus enabling you to send a response to your user immediately, while your event gets handled in the background.
+
+This also means that if you dispatch one event from a handler for another event, all of the oriignal event's handlers will be executed first, before moving on to those for the newly-dispatched event.
 
 ## Like it?
 Star and share, and give me a shout out [on Twitter](http://twitter.com/theshalvah)
@@ -249,6 +251,6 @@ npm run test
 ```
 
 ## Todo
-- add support for `broadcastWhen` option
+- add support for `broadcastIf` option
 - add a `subscribe` method that allows for a handler to subscribe to an event
 - add support for Promises in event handlers

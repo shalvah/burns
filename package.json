@@ -1,11 +1,10 @@
 {
   "name": "burns",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "Manage application events without writing spaghetti code",
-  "main": "lib/burns.js",
+  "main": "src/burns.js",
   "scripts": {
-    "test": "nyc mocha --recursive --prof test/tests/ && nyc report --reporter=html",
-    "prepublish": "babel src/ -d lib"
+    "test": "nyc mocha --recursive --prof test/tests/ && nyc report --reporter=html"
   },
   "repository": {
     "type": "git",
@@ -25,8 +24,6 @@
   },
   "homepage": "https://github.com/shalvah/burns#readme",
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.6.0",
     "chai": "^4.1.2",
     "decache": "^4.1.0",
     "mocha": "^6.0.0",
