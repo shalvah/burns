@@ -3,20 +3,29 @@
 module.exports = makeEventsDispatcher;
 
 /**
- * Returns an event dispatcher.
- * @param configRepository An object that provides a `get` method to get the 'defaultHandler'`
- * @param eventsRepository An object that provides a `handlers` method to retrieve all handlrs registered for an event
- * @returns {{queuedHandlers: {}, dispatch: (function(*=, *=)), queueHandlers: (function(*=, *=)), dequeueHandlers: (function(*))}}
+ * @param {typeof import("../repositories/config")} configRepository
+ * @param {typeof import("../repositories/events")} eventsRepository
  */
 function makeEventsDispatcher(configRepository, eventsRepository) {
     return {
         queuedHandlers: {},
 
-        dispatch(eventName, payload) {
+        /**
+         * Dispatch an event.
+         *
+         * @param {string} eventName
+         * @param {?} payload
+         */
+        dispatch(eventName, payload = null) {
             this.queueHandlers(eventName, payload);
         },
 
-        queueHandlers(eventName, eventData) {
+        /**
+         * Queue handlers to be called.
+         * @param {string} eventName
+         * @param {?} eventData
+         */
+        queueHandlers(eventName, eventData = null) {
             let handlers = eventsRepository.handlers(eventName);
 
             if (handlers.length <= 0) {
@@ -38,6 +47,10 @@ function makeEventsDispatcher(configRepository, eventsRepository) {
             }
         },
 
+        /**
+         * Cancel queued handlers so they are no longer called.
+         * @param {string} eventName
+         */
         dequeueHandlers(eventName) {
             for (let handlerRef of this.queuedHandlers[eventName]) {
                 clearTimeout(handlerRef);

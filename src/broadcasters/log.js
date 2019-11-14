@@ -2,6 +2,10 @@
 
 module.exports = makeLogBroadcaster;
 
+/**
+ * @param {?=} config
+ * @returns {import('../repositories/broadcasters').Broadcaster}
+ */
 function makeLogBroadcaster(config) {
     return {
         broadcast(channel, event, payload, options = {}) {

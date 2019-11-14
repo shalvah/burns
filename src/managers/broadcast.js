@@ -3,16 +3,20 @@
 module.exports = makeBroadcastManager;
 
 /**
- * Returns a broadcast manager
- *
- * @param configRepository An object that provides a `get` method for getting config values with dot notation'`
- * @param eventsRepository
- * @param broadcastersRepository
- * @returns {{broadcast: (function(*=, *=, *=))}}
+ * @param {typeof import("../repositories/config")} configRepository
+ * @param {typeof import("../repositories/events")} eventsRepository
+ * @param {typeof import("../repositories/broadcasters")} broadcastersRepository
  */
 function makeBroadcastManager(configRepository, eventsRepository, broadcastersRepository) {
     return {
-        broadcast(event, payload, options = {}) {
+        /**
+         * Broadcast an event.
+         *
+         * @param {string} event
+         * @param {?} payload
+         * @param {?} options
+         */
+        broadcast(event, payload = null, options = {}) {
             let broadcastChannel = eventsRepository.broadcastConfig(event).broadcastOn;
             if (!broadcastChannel) {
                 return;
