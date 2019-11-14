@@ -147,7 +147,7 @@ describe('Burns', function() {
                 }
             }).dispatch('theEvent');
 
-            expect(console.log.calledOnce).to.equal(true);
+            expect(console.log.called).to.equal(true);
             const logOutput = console.log.getCall(0).args[0];
             expect(logOutput).to.contain('theChannel');
             expect(logOutput).to.contain('theEvent');

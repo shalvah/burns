@@ -10,7 +10,7 @@ function makeMockBroadcasters(broadcasters = null) {
         }
     }
     return {
-        get(key) {
+        createBroadcaster(key) {
             return broadcasters[key];
         }
     };

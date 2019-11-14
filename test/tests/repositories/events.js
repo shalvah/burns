@@ -111,15 +111,15 @@ describe('Events repository', function () {
         it('falls back to default options when event not registered or no broadcast options set for event', function (done) {
             const eventsRepository = require('../../../src/repositories/events');
             expect(eventsRepository.broadcastConfig('apocalypse'))
-                .to.deep.include({ broadcastOn: null, broadcastWhen: null});
+                .to.deep.include({ broadcastOn: null, broadcastIf: true});
 
             eventsRepository.add({ apocalypse: [] });
             expect(eventsRepository.broadcastConfig('apocalypse'))
-                .to.deep.include({ broadcastOn: null, broadcastWhen: null});
+                .to.deep.include({ broadcastOn: null, broadcastIf: true});
 
             eventsRepository.add({ apocalypse: { broadcastOn: '2012' }});
             expect(eventsRepository.broadcastConfig('apocalypse'))
-                .to.deep.include({ broadcastOn: '2012', broadcastWhen: null});
+                .to.deep.include({ broadcastOn: '2012', broadcastIf: true});
 
             done();
         });
@@ -127,10 +127,10 @@ describe('Events repository', function () {
         it('returns broadcast options for an event', function (done) {
             const eventsRepository = require('../../../src/repositories/events');
             const dummy = () => {};
-            eventsRepository.add({ apocalypse: { broadcastOn: '2012', broadcastWhen: dummy }});
+            eventsRepository.add({ apocalypse: { broadcastOn: '2012', broadcastIf: dummy }});
 
             expect(eventsRepository.broadcastConfig('apocalypse'))
-                .to.deep.include({ broadcastOn: '2012', broadcastWhen: dummy });
+                .to.deep.include({ broadcastOn: '2012', broadcastIf: dummy });
             done();
         });
     });

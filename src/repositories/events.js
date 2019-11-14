@@ -4,8 +4,7 @@
  * @typedef {(payload: ?) => false|void} EventHandler
  */
 /**
- *
- * @typedef {{broadcastOn?: string|((payload: ?) => string|null), broadcastWhen?: boolean|((payload: ?) => boolean)|null}} BroadcastConfig
+ * @typedef {{broadcastOn?: string|((payload: ?) => string|null), broadcastIf?: boolean|((payload: ?) => boolean)}} BroadcastConfig
  * @typedef {{handlers: EventHandler[]} & BroadcastConfig} EventConfig
  */
 
@@ -36,13 +35,13 @@ module.exports = {
      * @returns {BroadcastConfig}
      */
     broadcastConfig(event) {
-        let defaultConfig = { broadcastOn: null, broadcastWhen: null};
+        let defaultConfig = { broadcastOn: null, broadcastIf: true};
         let eventConfig = this.events[event];
         if (eventConfig) {
-            const {broadcastOn, broadcastWhen} = eventConfig;
+            const {broadcastOn, broadcastIf} = eventConfig;
             return {
                 broadcastOn: broadcastOn === undefined ? null : broadcastOn,
-                broadcastWhen: broadcastWhen === undefined ? null : broadcastWhen,
+                broadcastIf: broadcastIf === undefined ? true : broadcastIf,
             };
         }
         return defaultConfig;

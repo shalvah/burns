@@ -17,9 +17,17 @@ function makeBroadcastManager(configRepository, eventsRepository, broadcastersRe
          * @param {Object<string, ?>} options
          * @param {string=} options.exclude
          */
-        broadcast(event, payload = null, options = {}) {
-            let broadcastChannel = eventsRepository.broadcastConfig(event).broadcastOn;
-            if (!broadcastChannel) {
+        async broadcast(event, payload = null, options = {}) {
+            let { broadcastOn, broadcastIf } = eventsRepository.broadcastConfig(event);
+
+            if (!broadcastOn) {
+                // No channels specified
+                return;
+            }
+
+            const shouldBroadcast = typeof broadcastIf === "function"
+                ? await broadcastIf(payload) : broadcastIf;
+            if (shouldBroadcast === false) {
                 return;
             }
 
@@ -28,12 +36,12 @@ function makeBroadcastManager(configRepository, eventsRepository, broadcastersRe
                 return;
             }
 
-            const broadcastingConfig = configRepository.get(broadcastDriver);
-            let broadcaster = broadcastersRepository.get(broadcastDriver, broadcastingConfig);
-            if (typeof broadcastChannel === 'function') {
-                broadcastChannel = broadcastChannel(payload);
+            const driverConfig = configRepository.get(broadcastDriver);
+            let broadcaster = broadcastersRepository.createBroadcaster(broadcastDriver, driverConfig);
+            if (typeof broadcastOn === 'function') {
+                broadcastOn = broadcastOn(payload);
             }
-            broadcaster.broadcast(broadcastChannel, event, payload, options);
+            broadcaster.broadcast(broadcastOn, event, payload, options);
         }
     }
 }

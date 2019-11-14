@@ -11,7 +11,7 @@ module.exports = {
      * @param {?} config
      * @returns {Broadcaster}
      */
-    get(driver, config) {
+    createBroadcaster(driver, config) {
         return require(`../broadcasters/${driver}`)(config);
     }
 };

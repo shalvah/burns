@@ -21,12 +21,12 @@ describe('Broadcast manager', function() {
             const mockEvents = makeMockEvents({ broadcastOn: 'theChannel' });
             const mockBroadcasters = makeMockBroadcasters();
 
-            sinon.spy(mockBroadcasters, 'get');
+            sinon.spy(mockBroadcasters, 'createBroadcaster');
 
             const broadcastManager = require('../../../src/managers/broadcast')(mockConfig, mockEvents, mockBroadcasters);
             broadcastManager.broadcast('theEvent', { the: 'payload' });
 
-            expect(mockBroadcasters.get.notCalled).to.equal(true);
+            expect(mockBroadcasters.createBroadcaster.notCalled).to.equal(true);
             done();
         });
 
@@ -34,12 +34,12 @@ describe('Broadcast manager', function() {
             const mockConfig = makeMockConfig({ broadcaster: 'log' });
             const mockEvents = makeMockEvents();
             const mockBroadcasters = makeMockBroadcasters();
-            sinon.spy(mockBroadcasters, 'get');
+            sinon.spy(mockBroadcasters, 'createBroadcaster');
 
             const broadcastManager = require('../../../src/managers/broadcast')(mockConfig, mockEvents, mockBroadcasters);
             broadcastManager.broadcast('theEvent', { the: 'payload' });
 
-            expect(mockBroadcasters.get.notCalled).to.equal(true);
+            expect(mockBroadcasters.createBroadcaster.notCalled).to.equal(true);
             done();
         });
 
@@ -96,6 +96,71 @@ describe('Broadcast manager', function() {
             expect(mockLogBroadcaster.broadcast.calledOnce).to.equal(true);
             expect(mockLogBroadcaster.broadcast.getCall(0).args[0]).to.equal('value-theChannel');
             mockLogBroadcaster.broadcast.resetHistory();
+            done();
+        });
+
+        it('does not broadcast if broadcastIf event config is false', function(done) {
+            const mockConfig = makeMockConfig({ broadcaster: 'log', broadcastIf: 1 === 0 });
+            const mockEvents = makeMockEvents();
+            const mockBroadcasters = makeMockBroadcasters();
+            sinon.spy(mockBroadcasters, 'createBroadcaster');
+
+            const broadcastManager = require('../../../src/managers/broadcast')(mockConfig, mockEvents, mockBroadcasters);
+            broadcastManager.broadcast('theEvent', { the: 'payload' });
+
+            expect(mockBroadcasters.createBroadcaster.notCalled).to.equal(true);
+            done();
+        });
+
+        it('does not broadcast if broadcastIf event config is a function returning false or resolving to false', function(done) {
+            const mockEvents = makeMockEvents();
+            const mockBroadcasters = makeMockBroadcasters();
+            sinon.spy(mockBroadcasters, 'createBroadcaster');
+            let mockConfig = makeMockConfig({ broadcaster: 'log', broadcastIf: (payload) => payload.the === 'not payload' });
+
+            let broadcastManager = require('../../../src/managers/broadcast')(mockConfig, mockEvents, mockBroadcasters);
+            broadcastManager.broadcast('theEvent', { the: 'payload' });
+
+            expect(mockBroadcasters.createBroadcaster.notCalled).to.equal(true);
+
+            mockConfig = makeMockConfig({ broadcaster: 'log', broadcastIf: () => Promise.resolve(false) });
+            broadcastManager = require('../../../src/managers/broadcast')(mockConfig, mockEvents, mockBroadcasters);
+            broadcastManager.broadcast('theEvent', { the: 'payload' });
+            expect(mockBroadcasters.createBroadcaster.notCalled).to.equal(true);
+            done();
+        });
+
+        it('broadcasts if broadcastIf event config is true', function(done) {
+            const mockConfig = makeMockConfig({ broadcaster: 'log', broadcastIf: true });
+            const mockEvents = makeMockEvents({ broadcastOn: 'theChannel' });
+            const mockBroadcasters = makeMockBroadcasters();
+            sinon.spy(mockBroadcasters, 'createBroadcaster');
+
+            const broadcastManager = require('../../../src/managers/broadcast')(mockConfig, mockEvents, mockBroadcasters);
+            broadcastManager.broadcast('theEvent', { the: 'payload' });
+            expect(mockBroadcasters.createBroadcaster.calledOnce).to.equal(true);
+            mockBroadcasters.createBroadcaster.resetHistory();
+            done();
+        });
+
+        it('broadcasts if broadcastIf event config is function returning true or resolving to true', function(done) {
+            const mockEvents = makeMockEvents({ broadcastOn: 'theChannel' });
+            const mockBroadcasters = makeMockBroadcasters();
+            sinon.spy(mockBroadcasters, 'createBroadcaster');
+
+            let mockConfig = makeMockConfig({ broadcaster: 'log', broadcastIf: (payload) => payload.the === 'payload' });
+
+            let broadcastManager = require('../../../src/managers/broadcast')(mockConfig, mockEvents, mockBroadcasters);
+            broadcastManager.broadcast('theEvent', { the: 'payload' });
+            expect(mockBroadcasters.createBroadcaster.calledOnce).to.equal(true);
+            mockBroadcasters.createBroadcaster.resetHistory();
+
+
+            mockConfig = makeMockConfig({ broadcaster: 'log', broadcastIf: () => Promise.resolve(true) });
+            broadcastManager = require('../../../src/managers/broadcast')(mockConfig, mockEvents, mockBroadcasters);
+            broadcastManager.broadcast('theEvent', { the: 'payload' });
+            expect(mockBroadcasters.createBroadcaster.calledOnce).to.equal(true);
+            mockBroadcasters.createBroadcaster.resetHistory();
             done();
         });
     });
