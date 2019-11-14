@@ -180,7 +180,7 @@ burns.configure({
 })
 ```
 
-> ⚠To use the `pusher` broadcaster, you need to install the Pusher Node.js SDK: `npm install pusher`
+> ⚠ To use the `pusher` broadcaster, you need to install the Pusher Node.js SDK: `npm install pusher`
 
 Then register the `orderStatusUpdated` using the "advanced" configuration format:
 
@@ -217,7 +217,7 @@ Yes, and that's a great thing for handling events at lower levels in your code b
 ## Asynchronous vs. Synchronous
 Unlike [Node.js' inbuilt events system](https://nodejs.org/api/events.html#events_asynchronous_vs_synchronous), Burns calls your event handlers asynchronously in the order in which they were registered. This means that the functions are queued behind whatever I/O event callbacks that are already in the event queue, thus enabling you to send a response to your user immediately, while your event gets handled in the background.
 
-This also means that if you dispatch one event from a handler for another event, all of the oriignal event's handlers will be executed first, before moving on to those for the newly-dispatched event.
+This also means that if you dispatch one event from a handler for another event, all of the original event's handlers will be executed first, before moving on to those for the newly-dispatched event.
 
 ## Like it?
 Star and share, and give me a shout out [on Twitter](http://twitter.com/theshalvah)
@@ -247,6 +247,4 @@ npm run test
 ```
 
 ## Todo
-- add support for `broadcastIf` option
-- add a `subscribe` method that allows for a handler to subscribe to an event
-- add support for Promises in event handlers
+- add support for `broadcastWhen` option

@@ -8,7 +8,7 @@
  * @typedef {Object<string, ?>} Config
  * @property {EventHandler|null=} defaultHandler
  * @property {string=} broadcaster
- * @property {{appId: string, key: string, secret: string, cluster?: string}|{}=} pusher
+ * @property {import("pusher").Options|{}=} pusher
  */
 
 module.exports = {

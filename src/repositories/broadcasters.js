@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * @typedef {{broadcast: function(string, string, ?, ?): ? }} Broadcaster
+ * @typedef {{broadcast: ((channels: string|string[], eventName: string, eventData: ?, options: {exclude?: string}) => ?)}} Broadcaster
  */
 
 module.exports = {

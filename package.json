@@ -3,7 +3,7 @@
   "version": "2.1.0",
   "description": "Manage application events without writing spaghetti code",
   "main": "src/burns.js",
-  "types": "src/burns.d.ts",
+  "types": "types/burns.d.ts",
   "scripts": {
     "test": "nyc mocha --recursive --prof test/tests/ && nyc report --reporter=html",
     "tsc": "tsc",

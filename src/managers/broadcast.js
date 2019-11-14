@@ -14,7 +14,8 @@ function makeBroadcastManager(configRepository, eventsRepository, broadcastersRe
          *
          * @param {string} event
          * @param {?} payload
-         * @param {?} options
+         * @param {Object<string, ?>} options
+         * @param {string=} options.exclude
          */
         broadcast(event, payload = null, options = {}) {
             let broadcastChannel = eventsRepository.broadcastConfig(event).broadcastOn;

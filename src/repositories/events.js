@@ -1,11 +1,11 @@
 'use strict';
 
 /**
- * @typedef {function(Object<?, ?>): false|void} EventHandler
+ * @typedef {(payload: ?) => false|void} EventHandler
  */
 /**
  *
- * @typedef {{broadcastOn?: string|function(any): string|null, broadcastWhen?: boolean|function(?): boolean|null}} BroadcastConfig
+ * @typedef {{broadcastOn?: string|((payload: ?) => string|null), broadcastWhen?: boolean|((payload: ?) => boolean)|null}} BroadcastConfig
  * @typedef {{handlers: EventHandler[]} & BroadcastConfig} EventConfig
  */
 

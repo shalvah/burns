@@ -34,6 +34,14 @@ class Burns {
         return this;
     }
 
+    /**
+     * Dispatch an event, and broadcast it, if configured.
+     * @param {string} eventName
+     * @param {?} eventData
+     * @param {Object<string, ?>} options
+     * @param {string=} options.exclude
+     * @returns {Burns}
+     */
     dispatch(eventName, eventData = {}, { exclude = null } = {}) {
         eventDispatcher.dispatch(eventName, eventData);
         broadcastManager.broadcast(eventName, eventData, { exclude });
