@@ -25,11 +25,6 @@ Inspired by Laravel's [events](https://laravel.com/docs/master/events) and [broa
 npm install burns
 ```
 
-You can optionally install type definitions to get better intellisense and autocompletion.
-```bash
-npm install --save-dev @types/burns
-```
-
 ## How to use
 
 ```js
@@ -184,7 +179,8 @@ burns.configure({
   }
 })
 ```
-You'll also need to run `npm install pusher` to pull in the Pusher Node SDK.
+
+> ⚠To use the `pusher` broadcaster, you need to install the Pusher Node.js SDK: `npm install pusher`
 
 Then register the `orderStatusUpdated` using the "advanced" configuration format:
 

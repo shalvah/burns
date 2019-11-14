@@ -3,8 +3,11 @@
   "version": "2.1.0",
   "description": "Manage application events without writing spaghetti code",
   "main": "src/burns.js",
+  "types": "src/burns.d.ts",
   "scripts": {
-    "test": "nyc mocha --recursive --prof test/tests/ && nyc report --reporter=html"
+    "test": "nyc mocha --recursive --prof test/tests/ && nyc report --reporter=html",
+    "tsc": "tsc",
+    "prepublish": "npm run tsc"
   },
   "repository": {
     "type": "git",
@@ -28,6 +31,8 @@
     "decache": "^4.1.0",
     "mocha": "^6.0.0",
     "nyc": "^14.0.0",
-    "sinon": "^7.0.0"
+    "pusher": "^3.0.0",
+    "sinon": "^7.0.0",
+    "typescript": "^3.7.2"
   }
 }
