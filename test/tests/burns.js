@@ -80,6 +80,29 @@ describe('Burns', function() {
             }, 0);
         });
 
+        it('calls all handlers for an event before those for an event disaptched from a handler', function(done) {
+            const burns = require('../../src/burns');
+
+            const handlerOne = sinon.spy(() => burns.dispatch('eventY'));
+            const handlerTwo = sinon.spy();
+            const handlerThree = sinon.spy();
+            const handlerFour = sinon.spy();
+
+            burns.registerEvents({
+                eventX: [handlerOne, handlerTwo, handlerThree],
+                eventY: handlerFour,
+            }).dispatch('eventX');
+
+            setTimeout(() => {
+                expect(handlerOne.calledOnce).to.equal(true);
+                expect(handlerTwo.calledAfter(handlerOne)).to.equal(true);
+                expect(handlerThree.calledAfter(handlerTwo)).to.equal(true);
+                expect(handlerFour.calledOnce).to.equal(true);
+                expect(handlerFour.calledAfter(handlerThree)).to.equal(true);
+                done();
+            }, 100); // Using a time interval to allow for all the handlers to be called before this timeout.
+        });
+
         it('calls the default handler if event not registered', function(done) {
             const defaultHandler = sinon.spy();
 
