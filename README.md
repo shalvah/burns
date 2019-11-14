@@ -164,6 +164,7 @@ This object will be passed as an argument to the handler.
 ## Broadcasting events
 Supposing you have an `orderStatusUpdated` event that is fired when the status of an order is updated, and you wish to update the order status on your frontend in realtime. Burns handles this for you via event broadcasting.
 
+### Configuring broadcasting
 You'll need to specify a `broadcaster`. For now, broadcasting is only supported to the console log (broadcaster: 'log') and [Pusher](http://pusher.com) (broadcaster: 'pusher'). The default broadcaster is `log`, which will log all broadcasts to the Node console. (You can disable broadcasting by setting `broadcaster: null`.)
 
 If you're broadcasting with Pusher, pass in your credentials as a `pusher` object:
@@ -182,6 +183,7 @@ burns.configure({
 
 > ⚠ To use the `pusher` broadcaster, you need to install the Pusher Node.js SDK: `npm install pusher`
 
+### Broadcasting an event
 Then register the `orderStatusUpdated` using the "advanced" configuration format:
 
 ```js
@@ -190,9 +192,9 @@ burns.registerEvents({
       handlers: [
           notifyUser
       ],
-      broadcastOn: 'orderStatusUpdates'
+      broadcastOn: 'orderStatusUpdates' // or an array of channels
   }
-})
+});
 ```
 
 The `broadcastOn` key specifies the name of the channel on which the event will be broadcast. It can be a string or a function that takes in the event payload and returns a channel name.
@@ -211,6 +213,32 @@ If you'd like to exclude the client that triggered the event from receiving the 
 burns.dispatch('orderStatusUpdated', order, { exclude: socketId });
 ```
 
+### Conditional broadcasting
+You can also have conditional broadcasting by using the `broadcastIf` property.
+
+```js
+burns.registerEvents({
+  orderStatusUpdated: {
+      handlers: [
+          notifyUser
+      ],
+      broadcastOn: 'orderStatusUpdates',
+      broadcastIf: process.env.NODE_ENV === 'production'
+  }
+});
+```
+
+You may specify a function that takes the event payload and should return true or false:
+
+```js
+({
+    broadcastIf: (data) => data.user.notifications.enabled === true,
+    // your function can return a promise too. Burns will await the result
+    // broadcastIf: (data) => data.user.getSettings()
+    //   .then(settings => settings.notifications.enabled === true),
+})
+```
+`
 ## But Node already supports events natively!
 Yes, and that's a great thing for handling events at lower levels in your code base (for instance, on `open` of a file, on `data` of a stream). When dealing with events at a higher level (such as a new user signing up), Burns is perfect for helping you keep your code clean and organized.
 
@@ -245,6 +273,3 @@ git checkout -b my-patch
 ```bash
 npm run test
 ```
-
-## Todo
-- add support for `broadcastWhen` option
