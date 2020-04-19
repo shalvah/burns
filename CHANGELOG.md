@@ -7,3 +7,6 @@
 - Renamed `event` method to `dispatch`
 - Replaced listener classes with handler functions
 - Added support for event broadcasting via og and Pusher
+
+## 2.0.1
+- Updated dependencies
