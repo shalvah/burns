@@ -8,6 +8,7 @@
 [![npm version](https://badge.fury.io/js/burns.svg)](https://badge.fury.io/js/burns)
 [![Build Status](https://travis-ci.org/shalvah/burns.svg?branch=master)](https://travis-ci.org/shalvah/burns)
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=shalvah/burns)](https://dependabot.com)
+[![npm](https://img.shields.io/npm/dt/burns)](https://www.npmjs.com/package/burns)
 
 Burns is a lightweight (no dependencies!) Node.js module for managing application events elegantly. Define your events and handlers in one place and dispatch them when you need to.
 
