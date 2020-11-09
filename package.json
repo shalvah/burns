@@ -7,8 +7,7 @@
   "scripts": {
     "test": "nyc mocha --recursive --prof test/tests/ && nyc report --reporter=html",
     "tsc": "tsc",
-    "lint": "eslint src",
-    "prepublish": "npm run lint"
+    "lint": "eslint src"
   },
   "repository": {
     "type": "git",
