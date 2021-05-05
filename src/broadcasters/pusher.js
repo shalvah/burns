@@ -13,7 +13,7 @@ function makePusherBroadcaster(config) {
 
     return {
         broadcast(channel, event, payload = null, options = {}) {
-            pusher.trigger(channel, event, payload, options.exclude);
+            pusher.trigger(channel, event, payload, options);
         }
     };
 }
