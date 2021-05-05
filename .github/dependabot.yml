@@ -6,7 +6,5 @@ updates:
     interval: daily
     time: "04:00"
   open-pull-requests-limit: 10
-  ignore:
-  - dependency-name: sinon
-    versions:
-    - 10.0.0
+  allow:
+  - dependency-type: "production"
